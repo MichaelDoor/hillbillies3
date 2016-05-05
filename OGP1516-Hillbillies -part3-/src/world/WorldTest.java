@@ -728,4 +728,47 @@ public class WorldTest {
 				|| world2.getAccessibleBoulder(position).equals(new PositionVector(1,1,0))));
 		assertEquals(true, world2.getAccessibleLog(position).equals(new PositionVector(2,2,0)));
 	}
+	
+	@Test
+	public void getAccessibleFriendEnemyAny() {
+		int nbX = 3;
+		int nbY = 3;
+		int nbZ = 1;
+		int[][][] matrix = new int[nbX][nbY][nbZ];
+		matrix[0][0][0] = 0; matrix[1][0][0] = 1; matrix[2][0][0] = 0; 
+		matrix[0][1][0] = 0; matrix[1][1][0] = 1; matrix[2][1][0] = 0; 
+		matrix[0][2][0] = 0; matrix[1][2][0] = 1; matrix[2][2][0] = 0; 
+		
+		World world2 =  new World(matrix, new DefaultTerrainChangeListener());
+		
+		world2.advanceTime(2);
+		
+		Unit mainUnit = new Unit(new PositionVector(0,1,0), "Ikke", new Faction());
+		world2.addUnit(mainUnit);
+		
+		world2.advanceTime(2);
+		
+		assertEquals(true, world2.getAccessibleAlly(mainUnit) == null);
+		assertEquals(true, world2.getAccessibleEnemy(mainUnit) == null);
+		assertEquals(true, world2.getAccessibleUnit(mainUnit) == null);
+		
+		Unit ally = new Unit(new PositionVector(2,0,0), "Ikke", mainUnit.getFaction());
+		Unit enemy = new Unit(new PositionVector(2,2,0), "Ikke", new Faction());
+		world2.addUnit(ally);
+		world2.addUnit(enemy);
+		
+		world2.advanceTime(2);
+		
+		assertEquals(true, world2.getAccessibleAlly(mainUnit) == null);
+		assertEquals(true, world2.getAccessibleEnemy(mainUnit) == null);
+		assertEquals(true, world2.getAccessibleUnit(mainUnit) == null);
+		
+		world2.collapse(new PositionVector(1,1,0));
+		world2.advanceTime(2);
+		
+		assertEquals(true, world2.getAccessibleAlly(mainUnit).equals(ally));
+		assertEquals(true, world2.getAccessibleEnemy(mainUnit).equals(enemy));
+		Unit anyUnit = world2.getAccessibleUnit(mainUnit);
+		assertEquals(true, anyUnit.equals(enemy) || anyUnit.equals(ally));
+	}
 }

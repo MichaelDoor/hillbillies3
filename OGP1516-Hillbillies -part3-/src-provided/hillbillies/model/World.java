@@ -1877,4 +1877,69 @@ public class World {
 		}
 		return false;
 	}
+	
+	/**
+	 * Return an accessible ally for this unit in this world.
+	 * @param unit	The given unit.
+	 * @return	A unit from this world's unit set that is not the given unit, but belongs to the same faction and is accessible
+	 * 			from the given unit's position. Null if none were found.
+	 * @throws NullPointerException
+	 * 			The given unit is not effective.
+	 * @throws IllegalArgumentException
+	 * 			The given unit does not belong to this world.
+	 */
+	public Unit getAccessibleAlly(Unit unit) throws NullPointerException, IllegalArgumentException{
+		if(! this.getUnitSet().contains(unit))
+			throw new IllegalArgumentException();
+		Faction faction = unit.getFaction();
+		for(Unit ally : this.getUnitSet()){
+			if((! ally.equals(unit)) && (ally.getFaction().equals(faction)) 
+					&& (this.isAccessible(ally.getCubePositionVector(), unit.getCubePositionVector())))
+				return ally;
+		}
+		return null;
+	}
+	
+	/**
+	 * Return an accessible enemy for this unit in this world.
+	 * @param unit	The given unit.
+	 * @return	A unit from this world's unit set that belongs to a different faction than the given unit and is accessible
+	 * 			from the given unit's position. Null if none were found.
+	 * @throws NullPointerException
+	 * 			The given unit is not effective.
+	 * @throws IllegalArgumentException
+	 * 			The given unit does not belong to this world.
+	 */
+	public Unit getAccessibleEnemy(Unit unit) throws NullPointerException, IllegalArgumentException{
+		if(! this.getUnitSet().contains(unit))
+			throw new IllegalArgumentException();
+		Faction faction = unit.getFaction();
+		for(Unit enemy : this.getUnitSet()){
+			if((! enemy.getFaction().equals(faction)) 
+					&& (this.isAccessible(enemy.getCubePositionVector(), unit.getCubePositionVector())))
+				return enemy;
+		}
+		return null;
+	}
+	
+	/**
+	 * Return an accessible unit for this unit in this world.
+	 * @param unit	The given unit.
+	 * @return	A unit from this world's unit set that is not this unit and is accessible
+	 * 			from the given unit's position. Null if none were found.
+	 * @throws NullPointerException
+	 * 			The given unit is not effective.
+	 * @throws IllegalArgumentException
+	 * 			The given unit does not belong to this world.
+	 */
+	public Unit getAccessibleUnit(Unit unit) throws NullPointerException, IllegalArgumentException{
+		if(! this.getUnitSet().contains(unit))
+			throw new IllegalArgumentException();
+		for(Unit resultUnit : this.getUnitSet()){
+			if((! resultUnit.equals(unit)) 
+					&& (this.isAccessible(resultUnit.getCubePositionVector(), unit.getCubePositionVector())))
+				return resultUnit;
+		}
+		return null;
+	}
 }
