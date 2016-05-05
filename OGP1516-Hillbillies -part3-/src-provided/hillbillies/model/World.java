@@ -31,6 +31,9 @@ import ogp.framework.util.Util;
  * @invar  The faction set of each world must be a valid faction set for any
  *         world.
  *       | isValidFactionSet(getFactionSet())
+ * @invar  The workshop set of each world must be a valid workshop set for any
+ *         world.
+ *       | isValidWorkshopSet(getWorkshopSet())
  * @author Michaël
  * @version 0.7
  */
@@ -54,12 +57,14 @@ public class World {
 	 * @effect The unit set of this new world is set to an empty hash set.
 	 * @effect The material set of this new world is set to an empty hash set.
 	 * @effect The faction set of this new world is set to a new hash set.
+	 * @effect The workshop set of this new world is set to the an new hash set.
 	 */
 	public World(int[][][] terrainTypes, TerrainChangeListener modelListener)
 			throws NullPointerException {
 		this.setUnitSet(new HashSet<Unit>());
 		this.setMaterialSet(new HashSet<Material>());
 		this.setFactionSet(new HashSet<>());
+		this.setWorkshopSet(new HashSet<PositionVector>());
 		this.setTerrainMatrix(terrainTypes);
 		this.modelListener = modelListener;
 		this.initializeCubeMatrix();
@@ -511,6 +516,7 @@ public class World {
 	 * @effect	The old cube at the new cube's position is replaced by the new cube in this world's cube matrix.
 	 * @effect	The terrain type of the old cube is replaced by that of the new cube in this world's terrain matrix.
 	 * @effect	Notifies this world's model listener that the terrain has changed.
+	 * @effect	If the new cube is a workshop, it's position is added to this world's workshop set.
 	 * @throws NullPointerException
 	 * 			The given new cube is not effective.
 	 */
@@ -522,6 +528,8 @@ public class World {
 		this.getCubeMatrix()[x][y][z] = newCube;
 		this.getTerrainMatrix()[x][y][z] = newCube.getTerrainType();
 		this.modelListener.notifyTerrainChanged(x, y, z);
+		if(newCube.getTerrainType() == 3)
+			this.getWorkshopSet().add(new PositionVector(x,y,z));
 	}
 	
 	/**
@@ -1703,5 +1711,170 @@ public class World {
 		boolean flag2 = (! this.getCube(unit.getCubePosition()[0],unit.getCubePosition()[1],unit.getCubePosition()[2]).isSolid());
 		boolean flag3 = (! unit.isTerminated());
 		return (flag1 && flag2 && flag3);
+	}
+	
+	/**
+	 * Check whether a given target position can be reached from a given current position.
+	 * @param targetPosition	The targeted position.
+	 * @param currentPosition	The current position.
+	 * @return	True if and only if no path can be determined to reach the given target position, starting from the given current
+	 * 			position.
+	 * @throws NullPointerException
+	 * 			The given target position and/or current position is/are not effective.
+	 * @throws IllegalArgumentException
+	 * 			The given target position and/or current position is/are not valid positions for this world or are the same.
+	 */
+	public boolean isAccessible(PositionVector targetPosition, PositionVector currentPosition) throws NullPointerException,
+																										IllegalArgumentException {
+		return (! this.determinePath(currentPosition, targetPosition).isEmpty());
+	}
+	
+	/**
+	 * Return the position of a boulder in this world, that is accessible from a given position.
+	 * @param position	The given position.
+	 * @return	The position of a material from this world's material list, that is a boulder and is accessible from the given
+	 * 			position. If none exist, return null.
+	 * @throws NullPointerException
+	 * 			The given position is not effective.
+	 * @throws IllegalArgumentException
+	 * 			The given position is not a valid position for this world.
+	 */
+	public PositionVector getAccessibleBoulder(PositionVector position) throws NullPointerException, IllegalArgumentException{
+		// since isAccessible throws exception when positions are the same
+		if(this.cubeHasBoulder(position))
+			return this.getABoulder(position).getCubePositionVector();
+		for(Material material : this.getMaterialSet()){
+			if(material.getClass().equals(Boulder.class)){
+				if(this.isAccessible(material.getCubePositionVector(), position))
+					return material.getCubePositionVector();
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Return the position of a log in this world, that is accessible from a given position.
+	 * @param position The given position.
+	 * @return	The position of a material from this world's material list, that is a log and is accessible from the given
+	 * 			position. If none exist, return null.
+	 * @throws	NullPointerException
+	 * 			The given position is not effective.
+	 * @throws	IllegalArgumentException
+	 * 			The given position is not a valid position for this world.
+	 */
+	public PositionVector getAccessibleLog(PositionVector position) throws NullPointerException, IllegalArgumentException{
+		// since isAccessible throws exception when positions are the same
+		if(this.cubeHasLog(position))
+			return this.getALog(position).getCubePositionVector();
+		for(Material material : this.getMaterialSet()){
+			if(material.getClass().equals(Log.class)){
+				if(this.isAccessible(material.getCubePositionVector(), position))
+					return material.getCubePositionVector();
+			}
+		}
+		return null;
+	}
+	
+	/**
+	 * Return the position of a workshop in this world, that is accessible from a given position.
+	 * @param position	The given position.
+	 * @return	An element from this world's workshop set, that is accessible from the given position.
+	 * 			If non exist, return null.
+	 * @throws NullPointerException
+	 * 			The given position is not effective.
+	 * @throws IllegalArgumentException
+	 * 			The given position is not a valid position for this world.
+	 */
+	public PositionVector getAccesibleWorkshop(PositionVector position) throws NullPointerException, IllegalArgumentException{
+		for(PositionVector workshop : this.getWorkshopSet()){
+			if(this.isAccessible(workshop, position))
+				return workshop;
+		}
+		return null;
+	}
+	
+	/**
+	 * Return the workshop set of this world.
+	 */
+	@Basic @Raw
+	public Set<PositionVector> getWorkshopSet() {
+		return this.workshopSet;
+	}
+	
+	/**
+	 * Check whether the given workshop set is a valid workshop set for
+	 * any world.
+	 *  
+	 * @param  workshop set
+	 *         The workshop set to check.
+	 * @return 
+	 *       | result == (workshopSet != null)
+	*/
+	public static boolean isValidWorkshopSet(Set<PositionVector> workshopSet) {
+		return (workshopSet != null);
+	}
+	
+	/**
+	 * Set the workshop set of this world to the given workshop set.
+	 * 
+	 * @param  workshopSet
+	 *         The new workshop set for this world.
+	 * @post   The workshop set of this new world is equal to
+	 *         the given workshop set.
+	 *       | new.getWorkshopSet() == workshopSet
+	 * @throws NullPointerException
+	 *         The given workshop set is not a valid workshop set for any
+	 *         world.
+	 *       | ! isValidWorkshopSet(getWorkshopSet())
+	 */
+	@Raw
+	private void setWorkshopSet(Set<PositionVector> workshopSet) 
+			throws NullPointerException {
+		if (! isValidWorkshopSet(workshopSet))
+			throw new NullPointerException();
+		this.workshopSet = workshopSet;
+	}
+	
+	/**
+	 * Variable registering the workshop set of this world.
+	 */
+	private Set<PositionVector> workshopSet;
+	
+	/**
+	 * Check whether a cube at a given position in this world, contains a log.
+	 * @param position	The given position.
+	 * @return	True if and only if there is an object in the cube's content that is a log. The cube being the cube referred to
+	 * 			by the given position.
+	 * @throws IllegalArgumentException
+	 * 			The given position is not a valid position for this world.
+	 * @throws NullPointerException
+	 * 			The given position is not effective.
+	 */
+	public boolean cubeHasLog(PositionVector position) throws IllegalArgumentException, NullPointerException{
+		Cube cube = this.getCube((int)position.getXArgument(), (int)position.getYArgument(), (int)position.getZArgument());
+		for(GameObject item : cube.getContent()){
+			if(item.getClass().equals(Log.class))
+				return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Check whether a cube at a given position in this world, contains a boulder.
+	 * @param position	The given position.
+	 * @return	True if and only if there is an object in the cube's content that is a boulder. The cube being the cube referred to
+	 * 			by the given position.
+	 * @throws IllegalArgumentException
+	 * 			The given position is not a valid position for this world.
+	 * @throws NullPointerException
+	 * 			The given position is not effective.
+	 */
+	public boolean cubeHasBoulder(PositionVector position) throws IllegalArgumentException, NullPointerException{
+		Cube cube = this.getCube((int)position.getXArgument(), (int)position.getYArgument(), (int)position.getZArgument());
+		for(GameObject item : cube.getContent()){
+			if(item.getClass().equals(Boulder.class))
+				return true;
+		}
+		return false;
 	}
 }

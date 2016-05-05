@@ -679,4 +679,53 @@ public class WorldTest {
 		world2.advanceTime(2);
 		assertEquals(false, world2.hasAsUnit(target));
 	}
+	
+	@Test
+	public void isAccesible_TrueAndFalseCases(){
+		int nbX = 3;
+		int nbY = 3;
+		int nbZ = 1;
+		int[][][] matrix = new int[nbX][nbY][nbZ];
+		matrix[0][0][0] = 0; matrix[1][0][0] = 1; matrix[2][0][0] = 0; 
+		matrix[0][1][0] = 0; matrix[1][1][0] = 1; matrix[2][1][0] = 0; 
+		matrix[0][2][0] = 0; matrix[1][2][0] = 1; matrix[2][2][0] = 0; 
+		
+		World world2 =  new World(matrix, new DefaultTerrainChangeListener());
+		Unit unit = new Unit(new PositionVector(0,1,0), "Ikke", new Faction());
+		world2.addUnit(unit);
+		assertEquals(true, world2.isAccessible(new PositionVector(0,0,0), unit.getCubePositionVector()));
+		assertEquals(false, world2.isAccessible(new PositionVector(2,1,0), unit.getCubePositionVector()));
+	}
+	
+	@Test
+	public void getAccessibleBoulderLog(){
+		int nbX = 3;
+		int nbY = 3;
+		int nbZ = 1;
+		int[][][] matrix = new int[nbX][nbY][nbZ];
+		matrix[0][0][0] = 0; matrix[1][0][0] = 1; matrix[2][0][0] = 1; 
+		matrix[0][1][0] = 0; matrix[1][1][0] = 1; matrix[2][1][0] = 0; 
+		matrix[0][2][0] = 0; matrix[1][2][0] = 1; matrix[2][2][0] = 2; 
+		
+		World world2 =  new World(matrix, new DefaultTerrainChangeListener());
+		
+		world2.advanceTime(2);
+		PositionVector position = new PositionVector(0,1,0);
+		assertEquals(true, world2.getAccessibleBoulder(position) == null);
+		assertEquals(true, world2.getAccessibleLog(position) == null);
+		
+		world2.collapse(new PositionVector(2,0,0));
+		world2.collapse(new PositionVector(2,2,0));
+		world2.advanceTime(2);
+		
+		assertEquals(true, world2.getAccessibleBoulder(position) == null);
+		assertEquals(true, world2.getAccessibleLog(position) == null);
+		
+		world2.collapse(new PositionVector(1,1,0));
+		world2.advanceTime(2);
+		
+		assertEquals(true, (world2.getAccessibleBoulder(position).equals(new PositionVector(2,0,0))
+				|| world2.getAccessibleBoulder(position).equals(new PositionVector(1,1,0))));
+		assertEquals(true, world2.getAccessibleLog(position).equals(new PositionVector(2,2,0)));
+	}
 }
