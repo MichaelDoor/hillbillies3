@@ -1942,4 +1942,19 @@ public class World {
 		}
 		return null;
 	}
+	
+	/**
+	 * Return an adjacent standing position in this world for the given position.
+	 * @param position	The given position.
+	 * @return	An element from the list of all adjacent standing positions for the given position.
+	 * @throws NullPointerException
+	 * 			The given position is not effective.
+	 * @throws IllegalArgumentException
+	 * 			The given position is not a valid position for this world.
+	 */
+	public PositionVector getAdjacentStandingPosition(PositionVector position) throws NullPointerException, IllegalArgumentException{
+		Set<PositionVector> adjacents = this.getAdjacentStandingPositions(position);
+		return adjacents.iterator().next();
+		
+	}
 }
