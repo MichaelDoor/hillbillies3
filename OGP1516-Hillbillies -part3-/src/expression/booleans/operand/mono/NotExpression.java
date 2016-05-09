@@ -3,9 +3,9 @@ package expression.booleans.operand.mono;
 import expression.booleans.BooleanExpression;
 import objects.Unit;
 
-public class NotExpression<I extends BooleanExpression<I>> extends MonoOperandExpression<I> {
+public class NotExpression extends MonoOperandExpression<BooleanExpression<?>> {
 
-	public NotExpression(I value) {
+	public NotExpression(BooleanExpression<?> value) {
 		super(value);
 	}
 	

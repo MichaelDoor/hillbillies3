@@ -797,4 +797,19 @@ public class WorldTest {
 		assertEquals(true, mainUnit.getWorld().areAllies(mainUnit, ally));
 		assertEquals(false, mainUnit.getWorld().areAllies(mainUnit, enemy));
 	}
+	
+	@Test
+	public void accessibleWorkshop() {
+		int nbX = 3;
+		int nbY = 3;
+		int nbZ = 1;
+		int[][][] matrix = new int[nbX][nbY][nbZ];
+		matrix[0][0][0] = 0; matrix[1][0][0] = 1; matrix[2][0][0] = 0; 
+		matrix[0][1][0] = 0; matrix[1][1][0] = 3; matrix[2][1][0] = 0; 
+		matrix[0][2][0] = 0; matrix[1][2][0] = 1; matrix[2][2][0] = 0; 
+		World world2 =  new World(matrix, new DefaultTerrainChangeListener());
+		world2.advanceTime(2);
+		
+		assertEquals(true, (! world2.getWorkshopSet().isEmpty()));
+	}
 }

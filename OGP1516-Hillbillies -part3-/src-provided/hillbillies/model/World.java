@@ -194,7 +194,7 @@ public class World {
 	/**
 	 * Initialize the cube matrix of this world.
 	 * @effect	This world's cube matrix is created and a type of cube is mapped to each cell of it, according to each element 
-	 * of this world's terrain matrix.
+	 * of this world's terrain matrix. If the element is a workshop, it is also added to this world's workshop set.
 	 */
 	@Raw
 	private void initializeCubeMatrix() {
@@ -208,6 +208,8 @@ public class World {
 				int z = 0;
 				while (z < this.getNbCubesZ()) {
 					cubeMatrix[x][y][z] = this.mapCube(new PositionVector(x,y,z), terrainMatrix[x][y][z]);
+					if(terrainMatrix[x][y][z] == 3)
+						this.getWorkshopSet().add(new PositionVector(x,y,z));
 					z++;
 				}
 				y++;

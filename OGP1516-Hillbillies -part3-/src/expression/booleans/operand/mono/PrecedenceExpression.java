@@ -3,9 +3,9 @@ package expression.booleans.operand.mono;
 import expression.booleans.BooleanExpression;
 import objects.Unit;
 
-public class PrecedenceExpression<I extends BooleanExpression<I>> extends MonoOperandExpression<I> {
+public class PrecedenceExpression extends MonoOperandExpression<BooleanExpression<?>> {
 
-	public PrecedenceExpression(I value) {
+	public PrecedenceExpression(BooleanExpression<?> value) {
 		super(value);
 	}
 	

@@ -3,9 +3,9 @@ package expression.position;
 import objects.Unit;
 import position.PositionVector;
 
-public class HerePosition extends PositionExpression<PositionVector> {
+public class HereExpression extends PositionExpression<PositionVector> {
 
-	public HerePosition() {
+	public HereExpression() {
 		super(null);
 	}
 	
