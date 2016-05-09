@@ -1957,4 +1957,20 @@ public class World {
 		return adjacents.iterator().next();
 		
 	}
+	
+	/**
+	 * Check whether two given units of this world are allies.
+	 * @param unit	The first given unit.
+	 * @param otherUnit	The second given unit.
+	 * @return	True if and only if the two given units belong to the same faction.
+	 * @throws NullPointerException
+	 * 			At least one of the given units is not effective.
+	 * @throws IllegalArgumentException
+	 * 			At least one of the given unit's does not belong to this world.
+	 */
+	public boolean areAllies(Unit unit, Unit otherUnit) throws NullPointerException, IllegalArgumentException{
+		if((! this.hasAsUnit(unit)) && (! this.hasAsUnit(otherUnit)))
+			throw new IllegalArgumentException();
+		return unit.getFaction().equals(otherUnit.getFaction());
+	}
 }

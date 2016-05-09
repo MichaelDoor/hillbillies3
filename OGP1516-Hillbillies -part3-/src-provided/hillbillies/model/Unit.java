@@ -3400,4 +3400,15 @@ public class Unit extends GameObject {
 		}
 		return false;
 	}
+	
+	/**
+	 * Check whether this unit is carrying an item.
+	 * @return	True if and only if this unit's inventory is not empty.
+	 * 			| result == (! this.getInventory().isEmpty())
+	 */
+	public boolean isCarryingItem() {
+		if(! this.getInventory().isEmpty())
+			return true;
+		return false;
+	}
 }
