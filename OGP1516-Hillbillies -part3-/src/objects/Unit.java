@@ -3410,4 +3410,14 @@ public class Unit extends GameObject {
 			return true;
 		return false;
 	}
+	
+	/**
+	 * Check whether this unit is idle.
+	 * @return	True, if and only if this unit's activity status equals default and it's current position does not differ from
+	 * 			it's next position, nor it's destination.
+	 */
+	public boolean isIdle() {
+		return ((this.getActivityStatus().equals("default")) && (this.getUnitPosition().equals(this.getNextPosition())) 
+				&& this.getUnitPosition().equals(this.getDestination()));
+	}
 }

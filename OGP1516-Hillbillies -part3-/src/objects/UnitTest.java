@@ -111,4 +111,17 @@ public class UnitTest {
 		tester.terminate();
 		assertEquals(true, tester.isTerminated());
 	}
+	
+	@Test
+	public void isIdle() {
+		// doing nothing
+		boolean temp = tester.isIdle();
+		assertEquals(true, temp);
+		
+		// moving
+		tester.moveTo(new PositionVector(2.0,1.0,1.0));
+		testWorld.advanceTime(0.01);
+		temp = tester.isIdle();
+		assertEquals(false, temp);
+	}
 }

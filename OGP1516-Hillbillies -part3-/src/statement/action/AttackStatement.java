@@ -11,7 +11,17 @@ public class AttackStatement extends ActionStatement<Unit> {
 
 	@Override
 	public void run(Unit unit) throws NullPointerException {
-		unit.attack(this.getTarget().evaluate(unit));
+		Unit target = this.getTarget().evaluate(unit);
+		unit.attack(target);
+		this.setExecutionTarget(target);
+		this.setExecuted(true);
+	}
+	
+	@Override
+	public boolean isExecuted(Unit unit) throws NullPointerException {
+		if((this.isExecuted(unit)) && (unit.isIdle()) && (this.getExecutionTarget() != null))
+			this.setExecuted(true);
+		return this.getExecuted();
 	}
 
 }

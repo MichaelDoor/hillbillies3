@@ -1347,7 +1347,7 @@ public class World {
 	}
 	
 	/**
-	 * Return a set of all adjacent standing positions of a given position.
+	 * Return a set of all adjacent standing positions of a given position, the given position excluded.
 	 * @param position	The given position.
 	 * @return	A set of positions that are standing positions and adjacent positions of the given position.
 	 * @throws IllegalArgumentException

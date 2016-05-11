@@ -12,7 +12,18 @@ public class WorkStatement extends ActionStatement<PositionVector> {
 
 	@Override
 	public void run(Unit unit) throws NullPointerException {
-		unit.work(this.getTarget().evaluate(unit));
+		PositionVector target = this.getTarget().evaluate(unit);
+		unit.work(target);
+		this.setExecutionTarget(target);
+	}
+	
+	@Override
+	public boolean isExecuted(Unit unit) throws NullPointerException {
+		boolean flag1 = unit.isIdle();
+		boolean flag2 = (this.getExecutionTarget() != null);
+		if(flag1 && flag2 )
+			this.setExecuted(true);
+		return this.getExecuted();
 	}
 
 }

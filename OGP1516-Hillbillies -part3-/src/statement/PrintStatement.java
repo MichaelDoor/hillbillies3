@@ -6,6 +6,7 @@ import objects.Unit;
 public class PrintStatement extends MyStatement {
 
 	public PrintStatement(MyExpression<?,?> value) throws NullPointerException {
+		super();
 		this.setValue(value);
 	}
 	
@@ -24,6 +25,7 @@ public class PrintStatement extends MyStatement {
 	@Override
 	public void run(Unit unit) throws NullPointerException {
 		System.out.println(this.getValue().evaluate(unit));
+		this.setExecuted(true);
 	}
 
 }

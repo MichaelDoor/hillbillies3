@@ -7,6 +7,7 @@ import objects.Unit;
 public class SequenceStatement extends MyStatement {
 
 	public SequenceStatement(List<MyStatement> statements) throws NullPointerException {
+		super();
 		this.setStatements(statements);
 	}
 	
@@ -26,6 +27,23 @@ public class SequenceStatement extends MyStatement {
 	public void run(Unit unit) throws NullPointerException {
 		for(MyStatement statement : this.getStatements())
 			statement.run(unit);
+	}
+	
+	@Override
+	public boolean isExecuted(Unit unit) throws NullPointerException {
+		this.setExecuted(true);
+		for(MyStatement statement : this.getStatements()){
+			if(! statement.isExecuted(unit))
+				this.setExecuted(false);
+		}
+		return this.isExecuted(unit);
+	}
+	
+	@Override
+	public void rollback() {
+		super.rollback();
+		for(MyStatement statement : this.getStatements())
+			statement.rollback();
 	}
 
 }

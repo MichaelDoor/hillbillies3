@@ -8,6 +8,7 @@ public class AssignmentStatement<O> extends MyStatement {
 	public AssignmentStatement(String variableName, MyExpression<?,O> value) throws NullPointerException{
 		this.setName(variableName);
 		this.setValue(value);
+		this.setExecuted(true);
 	}
 	
 	public String getName() {
@@ -41,4 +42,5 @@ public class AssignmentStatement<O> extends MyStatement {
 	public O evaluate(Unit unit) throws NullPointerException {
 		return this.getValue().evaluate(unit);
 	}
+	
 }

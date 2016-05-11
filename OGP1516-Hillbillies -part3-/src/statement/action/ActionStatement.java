@@ -8,6 +8,7 @@ public abstract class ActionStatement<O> extends MyStatement {
 
 	public ActionStatement(MyExpression<?,O> target) {
 		this.setTarget(target);
+		this.setExecutionTarget(null);
 	}
 	
 	public MyExpression<?,O> getTarget() {
@@ -23,5 +24,30 @@ public abstract class ActionStatement<O> extends MyStatement {
 	private MyExpression<?,O> target;
 
 	public abstract void run(Unit unit) throws NullPointerException;
+	
+	/**
+	 * Return the target of the action performed last time this action statement was executed. Null if this action statement
+	 * has not been executed yet.
+	 */
+	public O getExecutionTarget(){
+		return this.executionTarget;
+	}
+	
+	protected void setExecutionTarget(O target){
+		if(target == null)
+			throw new NullPointerException();
+		this.executionTarget = target;
+	}
+	
+	/**
+	 * Variable registering the target of the action performed last time this action statement was executed.
+	 */
+	private O executionTarget;
+	
+	@Override
+	public void rollback() {
+		super.rollback();
+		this.setExecutionTarget(null);
+	}
 
 }

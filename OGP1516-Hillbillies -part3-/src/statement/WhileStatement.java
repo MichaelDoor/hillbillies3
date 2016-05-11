@@ -39,5 +39,12 @@ public class WhileStatement extends MyStatement {
 		while (this.getCondition().evaluate(unit))
 			this.getBody().run(unit);
 	}
+	
+	@Override
+	public boolean isExecuted(Unit unit) throws NullPointerException {
+		if ((! this.getCondition().evaluate(unit)) && (unit.isIdle()))
+			return true;
+		return false;
+	}
 
 }
