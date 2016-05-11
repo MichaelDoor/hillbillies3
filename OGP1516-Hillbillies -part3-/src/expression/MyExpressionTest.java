@@ -147,7 +147,7 @@ public class MyExpressionTest {
 	
 	@Test
 	public void nextToPosition() {
-		PositionVector position = new PositionVector(0,0,0);
+		LiteralPositionExpression position = new LiteralPositionExpression(new PositionVector(0,0,0));
 		NextToExpression temp = new NextToExpression(position);
 		PositionVector result = temp.evaluate(unit);
 		PositionVector option1 = new PositionVector(1,0,0);

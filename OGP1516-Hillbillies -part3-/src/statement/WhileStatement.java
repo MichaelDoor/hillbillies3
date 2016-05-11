@@ -36,7 +36,7 @@ public class WhileStatement extends MyStatement {
 
 	@Override
 	public void run(Unit unit) throws NullPointerException {
-		while (this.getCondition().evaluate(unit))
+		if(this.getCondition().evaluate(unit))
 			this.getBody().run(unit);
 	}
 	

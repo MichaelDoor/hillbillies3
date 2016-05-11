@@ -194,6 +194,7 @@ public class Facade implements IFacade{
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	public void work(Unit unit) throws ModelException {
 		try{

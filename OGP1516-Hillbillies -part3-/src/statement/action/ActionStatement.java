@@ -34,8 +34,6 @@ public abstract class ActionStatement<O> extends MyStatement {
 	}
 	
 	protected void setExecutionTarget(O target){
-		if(target == null)
-			throw new NullPointerException();
 		this.executionTarget = target;
 	}
 	
