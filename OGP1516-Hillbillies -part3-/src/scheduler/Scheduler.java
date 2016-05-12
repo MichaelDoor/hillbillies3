@@ -1,9 +1,12 @@
 package scheduler;
 
 import java.util.*;
+import java.util.function.Function;
+import java.util.Comparator;
 
 import be.kuleuven.cs.som.annotate.*;
 import faction.Faction;
+import objects.Unit;
 import task.Task;
 
 /**
@@ -274,5 +277,216 @@ public class Scheduler {
 	 *       |     (tasks.get(I) != tasks.get(J))
 	 */
 	private final List<Task> tasks = new ArrayList<Task>();
-
+	
+	/**
+	 * Add a set of tasks to this scheduler's task list.
+	 * @param taskSet
+	 * 			The given set of tasks.
+	 * @effect	Each task of the given set of tasks is added to this scheduler's task list.
+	 * 			| for(Task task : taskSet)
+	 * 			| 	this.addTask(task)
+	 * @throws NullPointerException
+	 * 			The given set of tasks is not effective.
+	 * 			| taskSet == null
+	 */
+	public void addTasks(Set<Task> taskSet) throws NullPointerException {
+		for(Task task : taskSet)
+			this.addTask(task);
+	}
+	
+	/**
+	 * Remove a set of tasks from this scheduler's task set.
+	 * @param taskSet	The given set of tasks.
+	 * @effect	Each task of the given set of tasks is removed from this scheduler's task list.
+	 * 			| for(Task task : taskSet)
+	 * 			| 	this.removeTask(task)
+	 * @throws NullPointerException
+	 * 			The given set of tasks is not effective.
+	 * 			| taskSet == null
+	 */
+	public void removeTasks(Set<Task> taskSet) throws NullPointerException {
+		for(Task task : taskSet)
+			this.removeTask(task);
+	}
+	
+	/**
+	 * Replace the given task by the other given task in this scheduler.
+	 * @param oldTask	The given task that needs to be replaced.
+	 * @param newTask	The given task that is the replacement.
+	 * @effect	The new task takes the place of the old task in this scheduler's task list.
+	 * 			| tasks.set(tasks.indexOf(oldTask), newTask);
+	 * @throws IllegalArgumentException
+	 * 			This scheduler does not have the given old task as one of it's tasks.
+	 * 			| (! this.hasAsTask(oldTask))
+	 * @throws IllegalArgumentException
+	 * 			This scheduler can not have the given new task as one of it's tasks.
+	 * 			| (! this.canHaveAsTask(newTask))
+	 * @throws NullPointerException
+	 * 			At least one of the given tasks is not effective.
+	 * 			| ((oldTask == null) || (newTask == null))
+	 */
+	public void replaceTask(Task oldTask, Task newTask) throws IllegalArgumentException, NullPointerException {
+		if((oldTask == null) || (newTask == null))
+			throw new NullPointerException();
+		if(! this.hasAsTask(oldTask))
+			throw new IllegalArgumentException();
+		if(! this.canHaveAsTask(newTask))
+			throw new IllegalArgumentException();
+		
+		tasks.set(tasks.indexOf(oldTask), newTask);
+	}
+	
+	/**
+	 * Check whether this scheduler has all the tasks of a given collection as it's task.
+	 * @param taskSet	The given set of tasks.
+	 * @return	True if and only if this scheduler has each element of the given set of tasks as one of it's tasks.
+	 * 			| for each(Task task : taskSet) {this.hasAsTask(task)}
+	 * 			| result == true
+	 * @throws NullPointerException
+	 */
+	public boolean hasAsTasks(Set<Task> taskSet) throws NullPointerException{
+		if(taskSet == null)
+			throw new NullPointerException();
+		for(Task task : taskSet){
+			if(! this.hasAsTask(task))
+				return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Return this scheduler's highest priority task that is not being executed.
+	 * @return	The element which's priority is greater than or equal to that of all the other elements in this scheduler's tasks
+	 * 			and does not have an executor.
+	 * 			| Iterator<Task> i = this.getTaskIterator()
+	 * 			| Task best = null
+	 * 			| while((i.hasNext()))
+	 * 			| 	Task temp = i.next()
+	 * 			| 	if(((best == null) || (temp.getPriority() > best.getPriority())) && (temp.getExecutor() == null))
+	 * 			| 	best = temp
+	 * 			| return best
+	 */
+	public Task getHighestPriorityTask() {
+		Iterator<Task> i = this.getTaskIterator();
+		Task best = null;
+		while((i.hasNext())){
+			Task temp = i.next();
+			if(((best == null) || (temp.getPriority() > best.getPriority())) && (temp.getExecutor() == null))
+				best = temp;
+		}
+		return best;
+	}
+	
+	/**
+	 * Return an iterator for this scheduler's tasks.
+	 * @return An iterator for this scheduler's tasks.
+	 * 			| result == tasks.iterator()
+	 */
+	public Iterator<Task> getTaskIterator() {
+		return tasks.iterator();
+	}
+	
+	/**
+	 * Return a list of all the tasks, currently being managed by this scheduler.
+	 */
+	@Basic @Raw
+	public List<Task> getTasks() {
+		return this.tasks;
+	}
+	
+	/**
+	 * Return a set of all tasks that are managed by this scheduler, that satisfy a given condition.
+	 * @param condition	The given condition, being a function with a task as input and a boolean constant as output, true if the 
+	 * 					task satisfies the condition. It is recommended that this function does not alter the objects that it gets
+	 * 					as input.
+	 * @return	All tasks from this scheduler's tasks, that evaluate true, when the given condition is applied to them.
+	 * 			| Set<Task> temp = new HashSet<>()
+	 * 			| for(Task task : tasks)
+	 * 			| 	 if(condition.apply(task)
+	 * 			| 		temp.add(task)
+	 * 			| result == temp
+	 */
+	public Set<Task> getTasksThat(Function<Task,Boolean> condition) {
+		Set<Task> temp = new HashSet<>();
+		temp.addAll(tasks);
+		Set<Task> result = new HashSet<>();
+		Iterator<Task> i = temp.iterator();
+		while(i.hasNext()) {
+			Task task = i.next();
+			boolean flag = condition.apply(task);
+			if(flag)
+				result.add(task);
+		}
+		return result;
+	}
+	
+	/**
+	 * Return an iterator for this scheduler's tasks in descending priority.
+	 * @return	An iterator for the version of tasks that is sorted by descending priority.
+	 * 			| result == prioritySort(new ArrayList<Task>()).addAll(tasks).iterator()
+	 */
+	public Iterator<Task> getPriorityIterator() {
+		List<Task> temp = new ArrayList<>();
+		temp.addAll(tasks);
+		prioritySort(temp);
+		return temp.iterator();
+	}
+	
+	/**
+	 * Sort the given task list for descending priority.
+	 * @param taskList	The given task list.
+	 * @effect	The given task list is sorted for descending priority.
+	 * 			| Comparator<Task> priorityComparator = (t,u) -> t.getPriority()-u.getPriority()
+	 * 			| taskList.sort(priorityComparator)
+	 * @throws NullPointerException
+	 */
+	public static void prioritySort(List<Task> taskList) throws NullPointerException {
+		if(taskList == null)
+			throw new NullPointerException();
+		// yes it's u-t, because t-u gives the ascending order
+		Comparator<Task> priorityComparator = (t,u) -> u.getPriority()-t.getPriority();
+		taskList.sort(priorityComparator);
+	}
+	
+	/**
+	 * Mark a task as scheduled for execution by a specific unit that is given.
+	 * @param unit	The given unit.
+	 * @param task	The given task.
+	 * @effect	The given unit is set as the specific unit of the given task.
+	 * 			| task.setSpecificUnit(unit)
+	 * @throws NullPointerException
+	 * 			The given unit or the given task is not effective.
+	 * 			| (unit == null) || (task == null)
+	 * @throws IllegalArgumentException
+	 * 			The given unit does not belong to this scheduler's faction or this scheduler does not have the given task
+	 * 			as one of its tasks.
+	 * 			| (! this.getFaction().hasAsUnit(unit)) || (! this.hasAsTask(task))
+	 */
+	public void assignSpecificUnit(Unit unit, Task task) throws NullPointerException, IllegalArgumentException {
+		if((unit == null) || (task == null))
+			throw new NullPointerException();
+		if((! this.getFaction().hasAsUnit(unit)) || (! this.hasAsTask(task)))
+			throw new IllegalArgumentException();
+		task.setSpecificUnit(unit);
+	}
+	
+	/**
+	 * Reset the marking of a given task to be executed by a specific unit.
+	 * @param task	The given task.
+	 * @effect	The given task's specific unit is set to null.
+	 * 			| task.setSpecificUnit(null)
+	 * @throws NullPointerException
+	 * 			The given task is not effective.
+	 * 			| task == null
+	 * @throws IllegalArgumentException
+	 * 			This scheduler does not have the given task as one of its tasks.
+	 * 			| ! this.hasAsTask(task)
+	 */
+	public void resetSpecificUnit(Task task) throws NullPointerException, IllegalArgumentException {
+		if(task == null)
+			throw new NullPointerException();
+		if(! this.hasAsTask(task))
+			throw new IllegalArgumentException();
+		task.setSpecificUnit(null);
+	}
 }
