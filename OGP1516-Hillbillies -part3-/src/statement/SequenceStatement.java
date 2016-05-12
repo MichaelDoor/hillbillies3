@@ -57,6 +57,7 @@ public class SequenceStatement extends MyStatement {
 		super.rollback();
 		for(MyStatement statement : this.getStatements())
 			statement.rollback();
+		this.setIterator(this.getStatements().iterator());
 	}
 	
 	public Iterator<MyStatement> getIterator() {

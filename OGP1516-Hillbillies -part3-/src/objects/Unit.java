@@ -1512,7 +1512,7 @@ public class Unit extends GameObject {
 	 * Return the work time of this unit.
 	 */
 	@Basic @Raw
-	private double getWorkTime() {
+	public double getWorkTime() {
 		return this.workTime;
 	}
 	

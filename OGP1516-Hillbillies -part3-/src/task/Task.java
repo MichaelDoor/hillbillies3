@@ -148,7 +148,7 @@ public class Task {
 	 * @effect	This tasks priority is subtracted by 10.
 	 * 			| this.setPriority(this.getPriority() - 10)
 	 */
-	private void reducePriority() {
+	public void reducePriority() {
 		int old = this.getPriority();
 		this.setPriority(old - 10);
 	}
@@ -221,17 +221,17 @@ public class Task {
 	 * @param  executor
 	 *         The executor to check.
 	 * @return True if and only if the given executor is not effective or is not terminated and is not resting, nor falling (has
-	 * 			falling speed as velocity), nor has any defend attempts (defending). 
+	 * 			falling speed as velocity), nor has any defend attempts (defending) and has it's default behaviour enabled.
 	 *       | result == ((executor == null) || ((! executor.isTerminated()) && (! executor.getActivityStatus().equals("rest")) 
-	 *       | 				&& (executor.getDefendAttempts().isEmpty())
-	 *       |					&& (executor.getCurrentVelocity().equals(new PositionVector(0,0,-3)))))
+	 *       | 				&& (executor.getDefendAttempts().isEmpty()) && (executor.getDefaultBehaviour())
+	 *       |					&& (! executor.getCurrentVelocity().equals(new PositionVector(0,0,-3)))))
 	 * @note	It's better to compare this unit's velocity with the falling velocity, because game object only adopt the 'fall'
 	 * 			activity status for a very short moment.
 	*/
 	public static boolean isValidExecutor(Unit executor) {
 		return ((executor == null) || ((! executor.isTerminated()) && (! executor.getActivityStatus().equals("rest")) 
-				&& (executor.getDefendAttempts().isEmpty())
-						&& (executor.getCurrentVelocity().equals(new PositionVector(0,0,-3)))));
+				&& (executor.getDefendAttempts().isEmpty()) && (executor.getDefaultBehaviour())
+						&& (! executor.getCurrentVelocity().equals(new PositionVector(0,0,-3)))));
 	}
 	
 	/**
@@ -279,7 +279,7 @@ public class Task {
 	 * 			| this.interrupt();
 	 * @effect	If this tasks executor has executed this task's activity, this task is terminated.
 	 * 			| this.terminate()
-	 * @effect	This task's activity is executed.
+	 * @effect	This task's activity is executed if this task's executor is idle.
 	 * 			| this.getActivity().run(this.getExecutor())
 	 * @throws IllegalStateException
 	 * 			This task does not have an executor.
@@ -295,7 +295,7 @@ public class Task {
 			this.terminate();
 			return;
 		}
-		else
+		else if(this.getExecutor().isIdle())
 			this.getActivity().run(this.getExecutor());
 	}
 	
