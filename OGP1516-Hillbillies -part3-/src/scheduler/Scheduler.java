@@ -489,4 +489,148 @@ public class Scheduler {
 			throw new IllegalArgumentException();
 		task.setSpecificUnit(null);
 	}
+	
+	/**
+	 * Check whether this scheduler has some task for the given unit.
+	 * @param unit	The given unit.
+	 * @return	True if and only if either this unit is already working on a task of this scheduler or this scheduler still
+	 * 			has an available task that can be executed.
+	 * 			| result == (this.hasAsWorker(unit)) || (this.getHighestPriorityTask() != null)
+	 * @throws NullPointerException
+	 * 			The given unit is not effective.
+	 * 			| unit == null
+	 * @throws IllegalArgumentException
+	 * 			The given unit is not of this scheduler's faction.
+	 * 			| (! unit.getFaction().equals(this.getFaction()))
+	 */
+	public boolean hasWork(Unit unit) throws NullPointerException, IllegalArgumentException {
+		if(! unit.getFaction().equals(this.getFaction()))
+			throw new IllegalArgumentException();
+		return (this.hasAsWorker(unit)) || (this.getHighestPriorityTask() != null);
+	}
+	
+	/**
+	 * Check whether this scheduler could have the given unit as one of it's workers.
+	 * @param unit	The given unit.
+	 * @return	True if and only if the given unit is not yet in this schedulers map of workers.
+	 * 			| result == (! this.workers.containsKey(unit))
+	 * @throws NullPointerException
+	 * 			The given unit is not effective.
+	 * 			| unit == null
+	 */
+	public boolean canHaveAsWorker(Unit unit) throws NullPointerException{
+		if(unit == null)
+			throw new NullPointerException();
+		if(this.workers.containsKey(unit))
+			return false;
+		return true;
+	}
+	
+	/**
+	 * Check whether this scheduler has a proper set of workers.
+	 * @return	True if and only if each worker of this scheduler's workers map is the executor of the task it's mapped to.
+	 * 			| for(Unit worker : this.workers.keySet()){
+	 * 			| 	this.workers.get(worker).getExecutor().equals(worker)}
+	 */
+	public boolean hasProperWorkers() {
+		for(Unit worker : this.workers.keySet()){
+			if(! this.workers.get(worker).getExecutor().equals(worker))
+				return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Add a given unit to this scheduler's map of workers.
+	 * @param unit	The given unit.
+	 * @param task	The given task.
+	 * @effect	The given unit and task are put in this scheduler's map of workers.
+	 * 			| this.workers.put(unit,task)
+	 * @throws NullPointerException
+	 * 			The given unit is not effective.
+	 * 			| unit == null
+	 * @throws IllegalArgumentException
+	 * 			This scheduler can not have the given unit as one of its workers.
+	 * 			| (! this.canHaveAsWorker(unit))
+	 * @throws	IllegalArgumentException
+	 * 			This scheduler does not have the given task as one of its tasks.
+	 * 			| (! this.hasAsTask(task))
+	 */
+	private void addWorker(Unit unit, Task task) throws NullPointerException, IllegalArgumentException{
+		if(! this.canHaveAsWorker(unit))
+			new IllegalArgumentException();
+		if(! this.hasAsTask(task))
+			throw new IllegalArgumentException();
+		this.workers.put(unit,task);
+	}
+	
+	/**
+	 * Remove the given unit from this scheduler's map of workers.
+	 * @param unit	The given unit.
+	 * @effect	The given unit is removed from this scheduler's map of workers.
+	 * 			| this.workers.remove(unit)
+	 * @throws NullPointerException
+	 * 			The given unit is not effective.
+	 * 			| unit == null
+	 * @throws IllegalArgumentException
+	 * 			This scheduler does not have the given unit as one of its workers.
+	 * 			| (! this.hasAsWorker(unit))
+	 */
+	public void removeWorker(Unit unit) throws NullPointerException, IllegalArgumentException {
+		if(! this.hasAsWorker(unit))
+			throw new IllegalArgumentException();
+		this.workers.remove(unit);
+	}
+	
+	/**
+	 * Check whether a given unit is working on a task of this scheduler.
+	 * @param unit	The given unit.
+	 * @return	True if and only if this scheduler's map of workers contains the given worker.
+	 * 			| workers.containsKey(unit)
+	 * @throws NullPointerException
+	 * 			The given unit is not effective.
+	 * 			| unit == null
+	 */
+	public boolean hasAsWorker(Unit unit) throws NullPointerException {
+		if(unit == null)
+			throw new NullPointerException();
+		return workers.containsKey(unit);
+	}
+	
+	/**
+	 * Variable registering the units working on tasks of this scheduler, together with the task they're working on.
+	 */
+	private final Map<Unit,Task> workers = new HashMap<Unit,Task>();
+	
+	/**
+	 * Let the given unit execute a task.
+	 * @param unit	The given unit.
+	 * @effect	If the given unit is already a worker of this scheduler, the task it's mapped to is executed.
+	 * 			| this.workers.get(unit).execute()
+	 * @effect	If the given unit is not yet a worker of this scheduler, it is set set as the executor of this scheduler's highest 
+	 * 			priority task, it is also mapped to it as a worker of this scheduler and the task is executed.
+	 * 			| this.getHighestPriorityTask().setExecutor(unit)
+	 * 			| this.addWorker(unit, task)
+	 * @throws NullPointerException
+	 * 			The given unit is not effective.
+	 * 			| unit == null
+	 * @throws IllegalArgumentException
+	 * 			The given unit is not of this scheduler's faction. 
+	 * 			| (! unit.getFaction().equals(this.getFaction()))
+	 * @throws IllegalStateException
+	 * 			This scheduler does not have any available work.
+	 * 			| (! this.hasWork(unit))
+	 */
+	public void giveWork(Unit unit) throws NullPointerException, IllegalArgumentException, IllegalStateException {
+		if(this.hasAsWorker(unit)){
+			this.workers.get(unit).execute();
+		}
+		else {
+			if(! this.hasWork(unit))
+				throw new IllegalStateException();
+			Task task = this.getHighestPriorityTask();
+			task.setExecutor(unit);
+			this.addWorker(unit, task);
+		}
+	}
 }
