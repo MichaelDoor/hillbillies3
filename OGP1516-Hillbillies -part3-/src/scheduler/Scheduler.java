@@ -611,6 +611,7 @@ public class Scheduler {
 	 * 			priority task, it is also mapped to it as a worker of this scheduler and the task is executed.
 	 * 			| this.getHighestPriorityTask().setExecutor(unit)
 	 * 			| this.addWorker(unit, task)
+	 * 			| task.execute()
 	 * @throws NullPointerException
 	 * 			The given unit is not effective.
 	 * 			| unit == null
@@ -631,6 +632,7 @@ public class Scheduler {
 			Task task = this.getHighestPriorityTask();
 			task.setExecutor(unit);
 			this.addWorker(unit, task);
+			task.execute();
 		}
 	}
 }

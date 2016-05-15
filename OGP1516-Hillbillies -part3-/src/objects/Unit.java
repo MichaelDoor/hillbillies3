@@ -2506,8 +2506,11 @@ public class Unit extends GameObject {
 	/**
 	 * Make this unit do a random action of either walking, sprinting, working, resting or moving.
 	 * 
-	 * @effect 	This unit either moves to a random position, starts to work at a random adjacent position, starts to rest or 
-	 * 			attacks a random enemy in an adjacent cube, if there is any.
+	 * @effect	If this unit's faction does have work for this unit, this unit's faction's scheduler gives this unit work.
+	 * 			| this.getFaction().getScheduler().giveWork(this)
+	 * @effect 	If this unit's faction does not have any work for this unit, this unit either moves to a random position, 
+	 * 			starts to work at a random adjacent position, starts to rest or  attacks a random enemy in an adjacent cube, 
+	 * 			if there is any.
 	 * 			| Random generator = new Random()
 	 *	 		| int action = generator.nextInt(4)
 	 *			| Unit potentialEnemy = this.getRandomAdjacentEnemy()
@@ -2525,23 +2528,27 @@ public class Unit extends GameObject {
 	 *			| 	this.attack(potentialEnemy)
 	 */
 	@Raw
-	private void randomBehaviour() throws IllegalArgumentException {
-		Random generator = new Random();
-		int action = generator.nextInt(4);
-		Unit potentialEnemy = this.getRandomAdjacentEnemy();
-		if(potentialEnemy == null)
-			action = generator.nextInt(3);
-		if (action == 0){
-			int sprint = generator.nextInt(2);
-			this.moveTo(this.getWorld().randomStandingPosition());
-			this.setSprint(sprint == 1);
-		}
-		if (action == 1)
-			this.work(PositionVector.sum(this.randomAdjacent(),this.getCubePositionVector()));
-		if (action == 2) 
-			this.rest();
-		if (action == 3)
-			this.attack(potentialEnemy);
+	private void randomBehaviour() {
+			if(this.getFaction().hasWork(this))
+				this.getFaction().getScheduler().giveWork(this);
+			else {
+				Random generator = new Random();
+				int action = generator.nextInt(4);
+				Unit potentialEnemy = this.getRandomAdjacentEnemy();
+				if(potentialEnemy == null)
+					action = generator.nextInt(3);
+				if (action == 0){
+					int sprint = generator.nextInt(2);
+					this.moveTo(this.getWorld().randomStandingPosition());
+					this.setSprint(sprint == 1);
+				}
+				if (action == 1)
+					this.work(PositionVector.sum(this.randomAdjacent(),this.getCubePositionVector()));
+				if (action == 2) 
+					this.rest();
+				if (action == 3)
+					this.attack(potentialEnemy);
+			}
 	}
 	
 	/**

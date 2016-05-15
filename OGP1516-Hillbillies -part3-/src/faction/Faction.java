@@ -3,6 +3,7 @@ package faction;
 import be.kuleuven.cs.som.annotate.*;
 import java.util.*;
 import objects.*;
+import scheduler.Scheduler;
 
 /**
  * A class of factions.
@@ -10,6 +11,9 @@ import objects.*;
  * @invar  The unit set of each faction must be a valid unit set for any
  *         faction.
  *       | isValidUnitSet(getUnitSet())
+ * @invar  The scheduler of each faction must be a valid scheduler for any
+ *         faction.
+ *       | isValidScheduler(getScheduler())
  * @author Michaël
  * @version 0.1
  *
@@ -20,10 +24,28 @@ public class Faction {
 	 * Initialize this new faction.
 	 *
 	 * @effect The unit set of this new faction is set to an empty hash set.
+	 * @effect	The scheduler of this new faction is set to null.
 	 */
 	public Faction()
 			throws NullPointerException {
 		this.setUnitSet(new HashSet<Unit>());
+		this.setScheduler(null);
+	}
+	
+	/**
+	 * Initialize this new faction with given scheduler.
+	 *
+	 * @param  scheduler
+	 *         The scheduler for this new faction.
+	 * @effect	A new faction is initialized.
+	 * @effect The scheduler of this new faction is set to
+	 *         the given scheduler.
+	 *       | this.setScheduler(scheduler)
+	 * 
+	 */
+	public Faction(Scheduler scheduler) {
+		this();
+		this.setScheduler(scheduler);
 	}
 	
 	
@@ -137,6 +159,58 @@ public class Faction {
 	 */
 	public static int getMaxNbOfUnits() {
 		return maxNbOfUnits;
+	}	
+	
+	/**
+	 * Return the scheduler of this faction.
+	 */
+	@Basic @Raw
+	public Scheduler getScheduler() {
+		return this.scheduler;
 	}
-
+	
+	/**
+	 * Set the scheduler of this faction to the given scheduler.
+	 * 
+	 * @param  scheduler
+	 *         The new scheduler for this faction.
+	 * @post   The scheduler of this new faction is equal to
+	 *         the given scheduler.
+	 *       | new.getScheduler() == scheduler
+	 */
+	@Raw
+	public void setScheduler(Scheduler scheduler) {
+		this.scheduler = scheduler;
+	}
+	
+	/**
+	 * Variable registering the scheduler of this faction.
+	 */
+	private Scheduler scheduler;
+	
+	/**
+	 * Check whether this faction has work for the given unit.
+	 * @param unit	The given unit.
+	 * @return	True if and only if this faction's scheduler has work for the given unit.
+	 * @throws NullPointerException
+	 * 			The given unit is not effective.
+	 * @throws IllegalArgumentException
+	 * 			The given unit is not from this faction.
+	 */
+	public boolean hasWork(Unit unit) throws NullPointerException, IllegalArgumentException {
+		try {
+			return this.getScheduler().hasWork(unit);
+		}
+		// No work available
+		catch (IllegalStateException exc) {
+			return false;
+		}
+		// In case this faction has no scheduler
+		catch(NullPointerException exc) {
+			if(unit == null)
+				throw new NullPointerException();
+			else
+				return false;
+			}
+		}
 }
