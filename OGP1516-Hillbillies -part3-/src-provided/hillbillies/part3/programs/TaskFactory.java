@@ -3,47 +3,21 @@ package hillbillies.part3.programs;
 import java.util.ArrayList;
 import java.util.List;
 
-import expression.MyExpression;
-import expression.booleans.BooleanExpression;
-import expression.booleans.constant.FalseExpression;
-import expression.booleans.constant.TrueExpression;
-import expression.booleans.isSomething.cube.IsPassableExpression;
-import expression.booleans.isSomething.cube.IsSolidExpression;
-import expression.booleans.isSomething.unit.CarriesItemExpression;
-import expression.booleans.isSomething.unit.IsAliveExpression;
-import expression.booleans.isSomething.unit.IsEnemyExpression;
-import expression.booleans.isSomething.unit.IsFriendExpression;
-import expression.booleans.operand.binary.AndExpression;
-import expression.booleans.operand.binary.OrExpression;
-import expression.booleans.operand.mono.NotExpression;
-import expression.position.BoulderExpression;
-import expression.position.HereExpression;
-import expression.position.LiteralPositionExpression;
-import expression.position.LogExpression;
-import expression.position.NextToExpression;
-import expression.position.PositionExpression;
-import expression.position.PositionOfExpression;
-import expression.position.WorkshopExpression;
-import expression.unit.AnyExpression;
-import expression.unit.EnemyExpression;
-import expression.unit.FriendExpression;
-import expression.unit.ThisExpression;
-import expression.unit.UnitExpression;
-//import hillbillies.model.MyStatement;
-import statement.MyStatement;
-//import hillbillies.model.PositionVector;
-import position.PositionVector;
-//import hillbillies.model.Task;
-import task.Task;
-import statement.AssignmentStatement;
-import statement.IfStatement;
-import statement.PrintStatement;
-import statement.SequenceStatement;
-import statement.WhileStatement;
-import statement.action.AttackStatement;
-import statement.action.FollowStatement;
-import statement.action.MoveToStatement;
-import statement.action.WorkStatement;
+import hillbillies.model.PositionVector;
+import hillbillies.model.expression.*;
+import hillbillies.model.expression.booleans.*;
+import hillbillies.model.expression.booleans.constant.*;
+import hillbillies.model.expression.booleans.isSomething.cube.*;
+import hillbillies.model.expression.booleans.isSomething.unit.*;
+import hillbillies.model.expression.booleans.operand.binary.*;
+import hillbillies.model.expression.booleans.operand.mono.*;
+import hillbillies.model.expression.position.*;
+import hillbillies.model.expression.unit.*;
+import hillbillies.model.statement.*;
+import hillbillies.model.statement.action.*;
+import hillbillies.model.Task;
+
+
 
 public class TaskFactory implements ITaskFactory<MyExpression, MyStatement, Task> {
 
@@ -114,8 +88,7 @@ public class TaskFactory implements ITaskFactory<MyExpression, MyStatement, Task
 
 	@Override
 	public MyExpression createReadVariable(String variableName, SourceLocation sourceLocation) {
-		// TODO Auto-generated method stub
-		return null;?
+		return new ReadVariableExpression<>(variableName);
 	}
 
 	@Override

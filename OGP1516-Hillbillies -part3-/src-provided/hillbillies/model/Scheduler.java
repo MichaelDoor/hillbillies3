@@ -5,7 +5,9 @@ import java.util.function.Function;
 import java.util.Comparator;
 
 import be.kuleuven.cs.som.annotate.*;
-
+import hillbillies.model.Faction;
+import hillbillies.model.Unit;
+import hillbillies.model.Task;
 
 /**
  * A class of schedulers.
