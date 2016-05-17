@@ -70,6 +70,8 @@ public class Scheduler {
 	 * @post   The faction of this new scheduler is equal to
 	 *         the given faction.
 	 *       | new.getFaction() == faction
+	 * @effect	The given faction's scheduler is set to this scheduler.
+	 * 			| faction.setScheduler(this)
 	 * @throws NullPointerException
 	 *         The given faction is not a valid faction for any
 	 *         scheduler.
@@ -81,6 +83,7 @@ public class Scheduler {
 		if (! isValidFaction(faction))
 			throw new NullPointerException();
 		this.faction = faction;
+		faction.setScheduler(this);
 	}
 	
 	/**
@@ -493,9 +496,9 @@ public class Scheduler {
 	/**
 	 * Check whether this scheduler has some task for the given unit.
 	 * @param unit	The given unit.
-	 * @return	True if and only if either this unit is already working on a task of this scheduler or this scheduler still
-	 * 			has an available task that can be executed.
-	 * 			| result == (this.hasAsWorker(unit)) || (this.getHighestPriorityTask() != null)
+	 * @return	True if and only if either this unit is already working on a task of this scheduler and its scheduler delay is zero 
+	 * 			or this scheduler still has an available task that can be executed.
+	 * 			| result == ((this.hasAsWorker(unit)) && (unit.getSchedulerDelay() == 0)) || (this.getHighestPriorityTask() != null)
 	 * @throws NullPointerException
 	 * 			The given unit is not effective.
 	 * 			| unit == null
@@ -506,7 +509,7 @@ public class Scheduler {
 	public boolean hasWork(Unit unit) throws NullPointerException, IllegalArgumentException {
 		if(! unit.getFaction().equals(this.getFaction()))
 			throw new IllegalArgumentException();
-		return (this.hasAsWorker(unit)) || (this.getHighestPriorityTask() != null);
+		return ((this.hasAsWorker(unit)) && (unit.getSchedulerDelay() == 0)) || (this.getHighestPriorityTask() != null);
 	}
 	
 	/**
@@ -598,6 +601,23 @@ public class Scheduler {
 	}
 	
 	/**
+	 * Return the task a given worker is working on.
+	 * @param unit	The given worker.
+	 * @return	The value of the worker as key in this schedulers workers map.
+	 * 			| result == workers.get(worker)
+	 * @throws NullPointerException
+	 * 			The given worker is not effective.
+	 * 			| worker == null
+	 * @throws IllegalArgumentException
+	 * 			This scheduler does not have the given worker as one of its workers.
+	 */
+	public Task getTaskOf(Unit worker) throws NullPointerException, IllegalArgumentException {
+		if(! this.hasAsWorker(worker))
+			throw new IllegalArgumentException();
+		return workers.get(worker);
+	}
+	
+	/**
 	 * Variable registering the units working on tasks of this scheduler, together with the task they're working on.
 	 */
 	private final Map<Unit,Task> workers = new HashMap<Unit,Task>();
@@ -612,6 +632,8 @@ public class Scheduler {
 	 * 			| this.getHighestPriorityTask().setExecutor(unit)
 	 * 			| this.addWorker(unit, task)
 	 * 			| task.execute()
+	 * @effect	The given unit's scheduler delay is reset.
+	 * 			| unit.resetSchedulerDelay()
 	 * @throws NullPointerException
 	 * 			The given unit is not effective.
 	 * 			| unit == null
@@ -634,5 +656,6 @@ public class Scheduler {
 			this.addWorker(unit, task);
 			task.execute();
 		}
+		unit.resetSchedulerDelay();
 	}
 }

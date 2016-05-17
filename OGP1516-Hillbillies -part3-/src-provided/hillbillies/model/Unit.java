@@ -6,6 +6,7 @@ import java.util.*;
 import be.kuleuven.cs.som.annotate.*;
 import hillbillies.model.PositionVector;
 import hillbillies.model.World;
+import objects.Unit;
 import ogp.framework.util.Util;
 import hillbillies.model.Faction;
 
@@ -94,6 +95,9 @@ import hillbillies.model.Faction;
  * @invar  The target of each unit must be a valid target for any
  *         unit.
  *       | isValidTarget(getTarget())
+ * @invar  The scheduler delay of each unit must be a valid scheduler delay for any
+ *         unit.
+ *       | isValidSchedulerDelay(getSchedulerDelay())
  * @author Michaël Dooreman
  * @version	0.23
  */
@@ -160,15 +164,17 @@ public class Unit extends GameObject {
 	 * @effect 	The experience of this new unit is set to 0.
 	 *       	| this.setExp(0)
 	 * @effect 	The path queue of this new unit is set to an empty hash map.
-	 *       	| this.setQueue(new HashMap<PositionVector, Integer>())
+	 *       	| this.setQueue(new ArrayList<PositionVector>())
 	 * @effect 	The inventory of this new unit is set to an empty hash set.
 	 *       	| this.setInventory(new HashSet<Material>())
 	 * @effect 	The work position of this new unit is set to null.
 	 *       	| this.setWorkPosition(null)
 	 * @effect 	The defend attempts map of this new unit is set to an empty map.
-	 *       	| this.setDefendAttempts(new ArrayList<PositionVector>())
+	 *       	| this.setDefendAttempts(new HashMap<Unit,Boolean>())
 	 * @effect 	The target of this new unit is set to null.
 	 *       	| this.setTarget(null)
+	 * @effect 	The scheduler delay of this new unit is set to zero.
+	 *       	| this.setSchedulerDelay(0)
 	 * @throws  IllegalArgumentException
 	 * 		    The given name is not a valid name.
 	 * 			| ! isValidName(name)
@@ -212,6 +218,7 @@ public class Unit extends GameObject {
 		this.setWorkPosition(null);
 		this.setDefendAttempts(new HashMap<Unit,Boolean>());
 		this.setTarget(null);
+		this.setSchedulerDelay(0);
 	}
 	
 	/**
@@ -905,6 +912,9 @@ public class Unit extends GameObject {
 				&& (this.getUnitPosition()).equals(this.getDestination())))){
 				this.randomBehaviour();
 				status = this.getActivityStatus(); 
+				// in case it's working on a task, but has to wait before continuing
+				if(status.equals("default"))
+					this.decreaseSchedulerDelay(time);
 			}
 		else if (status.equals("attack")) {
 				this.doAttack(time);
@@ -1423,6 +1433,8 @@ public class Unit extends GameObject {
 	 * 			| this.advanceTime(restingTime)
 	 * @effect	The automatic rest counter is increased with the given amount of time.
 	 * 			| this.increaseAutRestCounter(dt)
+	 * @effect	A scheduler delay check is done for the given time.
+	 * 			| this.schedulerDelayCheck(dt)
 	 * @throws	IllegalArgumentException
 	 * 			Time is negative.
 	 * 			| time < 0
@@ -1458,6 +1470,7 @@ public class Unit extends GameObject {
 			this.setUnitPosition(PositionVector.sum(this.getUnitPosition(), PositionVector.multiplyBy(dt, velocity)));
 		}
 		this.increaseAutRestCounter(dt);
+		this.schedulerDelayCheck(dt);
 	}
 	
 	/**
@@ -1645,6 +1658,8 @@ public class Unit extends GameObject {
 	 * 			| 	this.advanceTime(restingTime)}
 	 * @effect	The automatic rest counter is increased with the given amount of time.
 	 * 			| this.increaseAutRestCounter(time)
+	 * @effect	A scheduler delay check is done for the given time.
+	 * 			| this.schedulerDelayCheck(time)
 	 * @throws	IllegalArgumentException
 	 * 			Time is negative.
 	 * 			| time < 0
@@ -1671,6 +1686,7 @@ public class Unit extends GameObject {
 			 this.setWorkTime(this.getWorkTime() - time);
 		}
 		this.increaseAutRestCounter(time);
+		this.schedulerDelayCheck(time);
 	}
 	
 	/**
@@ -1844,6 +1860,8 @@ public class Unit extends GameObject {
 	 * 			| 	this.setAttackTime(this.getAttackTime() - time)}
 	 * @effect	The automatic rest counter is increased with the given amount of time.
 	 * 			| this.increaseAutRestCounter(time)
+	 * @effect	A scheduler delay check is done for the given time.
+	 * 			| this.schedulerDelayCheck(time)
 	 * @throws	IllegalArgumentException
 	 * 			Time is negative.
 	 * 			| time < 0
@@ -1868,6 +1886,7 @@ public class Unit extends GameObject {
 			this.setAttackTime(this.getAttackTime() - time);
 		}
 		this.increaseAutRestCounter(time);
+		this.schedulerDelayCheck(time);
 	}
 	
 	/**
@@ -2496,18 +2515,24 @@ public class Unit extends GameObject {
 	
 	/**
 	 * Stop the default behaviour of this unit.
-	 * @effect	The default behaviour is set false.
+	 * @effect	This unit's default behaviour is set false.
 	 * 			| this.setDefaultBehaviour(false)
+	 * @effect	this unit's scheduler delay is set to zero.
+	 * 			| this.setSchedulerDelay(0)
 	 */
 	@Raw
 	public void stopDefaultBehaviour() {
 		this.setDefaultBehaviour(false);
+		this.setSchedulerDelay(0);
 	}
 	
 	/**
 	 * Make this unit do a random action of either walking, sprinting, working, resting or moving.
 	 * 
-	 * @effect 	This unit either moves to a random position, starts to work at a random adjacent position, starts to rest or 
+	 * @effect	If this unit's faction does have work for this unit, this unit's faction's scheduler gives this unit work.
+	 * 			| this.getFaction().getScheduler().giveWork(this)
+	 * @effect 	If this unit's faction does not have any work for this unit and this unit does not have any scheduler delay, 
+	 * 			this unit either moves to a random position, starts to work at a random adjacent position, starts to rest or 
 	 * 			attacks a random enemy in an adjacent cube, if there is any.
 	 * 			| Random generator = new Random()
 	 *	 		| int action = generator.nextInt(4)
@@ -2526,23 +2551,27 @@ public class Unit extends GameObject {
 	 *			| 	this.attack(potentialEnemy)
 	 */
 	@Raw
-	private void randomBehaviour() throws IllegalArgumentException {
-		Random generator = new Random();
-		int action = generator.nextInt(4);
-		Unit potentialEnemy = this.getRandomAdjacentEnemy();
-		if(potentialEnemy == null)
-			action = generator.nextInt(3);
-		if (action == 0){
-			int sprint = generator.nextInt(2);
-			this.moveTo(this.getWorld().randomStandingPosition());
-			this.setSprint(sprint == 1);
-		}
-		if (action == 1)
-			this.work(PositionVector.sum(this.randomAdjacent(),this.getCubePositionVector()));
-		if (action == 2) 
-			this.rest();
-		if (action == 3)
-			this.attack(potentialEnemy);
+	private void randomBehaviour() {
+			if(this.getFaction().hasWork(this))
+				this.getFaction().getScheduler().giveWork(this);
+			else if(this.getSchedulerDelay() == 0){
+				Random generator = new Random();
+				int action = generator.nextInt(4);
+				Unit potentialEnemy = this.getRandomAdjacentEnemy();
+				if(potentialEnemy == null)
+					action = generator.nextInt(3);
+				if (action == 0){
+					int sprint = generator.nextInt(2);
+					this.moveTo(this.getWorld().randomStandingPosition());
+					this.setSprint(sprint == 1);
+				}
+				if (action == 1)
+					this.work(PositionVector.sum(this.randomAdjacent(),this.getCubePositionVector()));
+				if (action == 2) 
+					this.rest();
+				if (action == 3)
+					this.attack(potentialEnemy);
+			}
 	}
 	
 	/**
@@ -3421,4 +3450,101 @@ public class Unit extends GameObject {
 		return ((this.getActivityStatus().equals("default")) && (this.getUnitPosition().equals(this.getNextPosition())) 
 				&& this.getUnitPosition().equals(this.getDestination()));
 	}
+	
+	/**
+	 * Return the scheduler delay of this unit.
+	 */
+	@Basic @Raw
+	public double getSchedulerDelay() {
+		return this.schedulerDelay;
+	}
+	
+	/**
+	 * Check whether the given scheduler delay is a valid scheduler delay for
+	 * any unit.
+	 *  
+	 * @param  scheduler delay
+	 *         The scheduler delay to check.
+	 * @return 
+	 *       | result == (schedulerDelay >= 0)
+	*/
+	public static boolean isValidSchedulerDelay(double schedulerDelay) {
+		return (schedulerDelay >= 0);
+	}
+	
+	/**
+	 * Set the scheduler delay of this unit to the given scheduler delay.
+	 * 
+	 * @param  schedulerDelay
+	 *         The new scheduler delay for this unit.
+	 * @post   The scheduler delay of this new unit is equal to
+	 *         the given scheduler delay.
+	 *       | new.getSchedulerDelay() == schedulerDelay
+	 * @throws IllegalArgumentException
+	 *         The given scheduler delay is not a valid scheduler delay for any
+	 *         unit.
+	 *       | ! isValidSchedulerDelay(getSchedulerDelay())
+	 */
+	@Raw
+	private void setSchedulerDelay(double schedulerDelay) 
+			throws IllegalArgumentException {
+		if (! isValidSchedulerDelay(schedulerDelay))
+			throw new IllegalArgumentException();
+		this.schedulerDelay = schedulerDelay;
+	}
+	
+	/**
+	 * Reset this unit's scheduler delay.
+	 * @effect	This unit's scheduler delay is set to the random work cool down time of any unit.
+	 * 			| this.setSchedulerDelay(randomWorkCoolDownTime)
+	 */
+	public void resetSchedulerDelay() {
+		this.setSchedulerDelay(randomWorkCoolDownTime);
+	}
+	
+	/**
+	 * Decrease this unit's scheduler delay time by a given amount of time.
+	 * @param time	The given amount of time.
+	 * @effect	If the given amount of time is greater than or equal to this unit's scheduler delay, it's set to zero.
+	 * 			| this.setSchedulerDelay(0)
+	 * @effect	If the given amount of time is smaller than this unit's scheduler delay, this unit's scheduler delay is set
+	 * 			to the old scheduler delay minus the given time.
+	 * 			| this.setSchedulerDelay(this.getSchedulerDelay()-time)
+	 * @throws IllegalArgumentException
+	 * 			The given amount of time is negative.
+	 * 			| time < 0
+	 */
+	private void decreaseSchedulerDelay(double time) throws IllegalArgumentException {
+		if(time < 0)
+			throw new IllegalArgumentException();
+		
+		if(time >= this.getSchedulerDelay())
+			this.setSchedulerDelay(0);
+		else
+			this.setSchedulerDelay(this.getSchedulerDelay()-time);
+	}
+	
+	/**
+	 * Decreases this unit's scheduler delay if it is allowed.
+	 * @param time	The given time
+	 * @effect	If this unit's default behavior is on, it's scheduler delay is decreased by the given time.
+	 * 			| this.decreaseSchedulerDelay(time)
+	 * @throws IllegalArgumentException
+	 * 			The given amount of time is negative.
+	 * 			| time < 0
+	 */
+	private void schedulerDelayCheck(double time) throws IllegalArgumentException {
+		if(this.getDefaultBehaviour())
+			this.decreaseSchedulerDelay(time);
+	}
+	
+	/**
+	 * Variable registering the scheduler delay of this unit.
+	 */
+	private double schedulerDelay;
+	
+	/**
+	 * Variable registering the time any unit has to wait between random behavior faction work requests.
+	 */
+	public static final double randomWorkCoolDownTime = 0.001;
 }

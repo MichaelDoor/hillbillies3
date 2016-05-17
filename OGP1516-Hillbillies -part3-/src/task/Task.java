@@ -301,12 +301,15 @@ public class Task {
 	
 	/**
 	 * Interrupt this task.
-	 * @effect	This task's executor is set to null, it's activity is rolled back and it's priority is reduced.
+	 * @effect	This task's executor is removed from it's faction's scheduler's worker set, this faction's executor is set to null, 
+	 * it's activity is rolled back and it's priority is reduced.
+	 * 			| this.getExecutor().getFaction().getScheduler().removeWorker(this.getExecutor())
 	 * 			| this.setExecutor(null)
 	 * 			| this.getActivity().rollback()
 	 * 			| this.reducePriority()
 	 */
 	public void interrupt() {
+		this.getExecutor().getFaction().getScheduler().removeWorker(this.getExecutor());
 		this.setExecutor(null);
 		this.getActivity().rollback();
 		this.reducePriority();
@@ -316,15 +319,15 @@ public class Task {
 	 * Terminate this task.
 	 * @effect	This task's executor is set to null, it's specific unit also and it's schedulerSet is emptied and it's activity
 	 * 			is set to null.
+	 * 			| this.emptySchedulerSet()
 	 * 			| this.setExecutor(null)
 	 * 			| this.setSpecificUnit(null)
-	 * 			| this.emptySchedulerSet()
 	 * 			| this.activity = null
 	 */
 	private void terminate() {
+		this.emptySchedulerSet();
 		this.setExecutor(null);
 		this.setSpecificUnit(null);
-		this.emptySchedulerSet();
 		this.activity = null;
 	}
 	
@@ -506,16 +509,23 @@ public class Task {
 	}
 	
 	/**
-	 * Empty this unit's scheduler set.
+	 * Empty this task's scheduler set and also removes this task's executor from the workers map of the scheduler corresponding
+	 * to the executor's faction.
+	 * @effect	If this tasks executor is effective, it is remove from the workers map of the scheduler corresponding to its faction. 
+	 * 			| scheduler.removeWorker(executor)
 	 * @effect	Each scheduler in this task's scheduler set removes this task.
 	 * 			| scheduler.remove(this)
 	 */
 	private void emptySchedulerSet() {
+		Unit executor = this.getExecutor();
 		Set<Scheduler> copy = new HashSet<Scheduler>();
 		for(Scheduler scheduler : this.getSchedulerSet())
 			copy.add(scheduler);
-		for(Scheduler scheduler : copy)
+		for(Scheduler scheduler : copy){
+			if((executor != null) && (executor.getFaction().equals(scheduler.getFaction())))
+				scheduler.removeWorker(executor);
 			scheduler.removeTask(this);
+		}
 	}
 	
 	/**

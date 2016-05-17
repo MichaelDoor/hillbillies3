@@ -177,11 +177,28 @@ public class Faction {
 	 * @post   The scheduler of this new faction is equal to
 	 *         the given scheduler.
 	 *       | new.getScheduler() == scheduler
+	 * @throws	IllegalArgumentException
+	 * 			This faction can not have the given scheduler as it's scheduler.
+	 * 			| (! this.canHaveAsScheduler(scheduler))
 	 */
 	@Raw
-	public void setScheduler(Scheduler scheduler) {
+	public void setScheduler(Scheduler scheduler) throws IllegalArgumentException {
+		if(! this.canHaveAsScheduler(scheduler)){
+			throw new IllegalArgumentException();
+		}
 		this.scheduler = scheduler;
 	}
+	
+	/**
+	 * Check whether this faction can have the given scheduler as it's scheduler.
+	 * @param scheduler	The given scheduler.
+	 * @return	True if and only if the given scheduler is not effective or has this faction as its faction.
+	 * 			| result == (scheduler == null) || (scheduler.getFaction().equals(this))
+	 */
+	public boolean canHaveAsScheduler(Scheduler scheduler) {
+		return (scheduler == null) || (scheduler.getFaction().equals(this));
+	}
+	
 	
 	/**
 	 * Variable registering the scheduler of this faction.
