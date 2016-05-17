@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import expression.MyExpression;
+import expression.booleans.BooleanExpression;
 import expression.booleans.constant.FalseExpression;
 import expression.booleans.constant.TrueExpression;
 import expression.booleans.isSomething.cube.IsPassableExpression;
@@ -28,10 +29,12 @@ import expression.unit.EnemyExpression;
 import expression.unit.FriendExpression;
 import expression.unit.ThisExpression;
 import expression.unit.UnitExpression;
-import hillbillies.model.MyStatement;
-import hillbillies.model.PositionVector;
-import hillbillies.model.Task;
-import javafx.beans.binding.BooleanExpression;
+//import hillbillies.model.MyStatement;
+import statement.MyStatement;
+//import hillbillies.model.PositionVector;
+import position.PositionVector;
+//import hillbillies.model.Task;
+import task.Task;
 import statement.AssignmentStatement;
 import statement.IfStatement;
 import statement.PrintStatement;
@@ -42,7 +45,7 @@ import statement.action.FollowStatement;
 import statement.action.MoveToStatement;
 import statement.action.WorkStatement;
 
-public class TaskFactory implements ITaskFactory<MyExpression<?,?>, MyStatement, Task> {
+public class TaskFactory implements ITaskFactory<MyExpression, MyStatement, Task> {
 
 	public TaskFactory() {
 	}
@@ -57,18 +60,19 @@ public class TaskFactory implements ITaskFactory<MyExpression<?,?>, MyStatement,
 
 	@Override
 	public MyStatement createAssignment(String variableName, MyExpression value, SourceLocation sourceLocation) {
-		return (new AssignmentStatement(variableName, value));
+		
+		return (MyStatement) new AssignmentStatement<>(variableName, value);
 	}
 
 	@Override
 	public MyStatement createWhile(MyExpression condition, MyStatement body, SourceLocation sourceLocation) {
-		return new WhileStatement(condition, body);
+		return new WhileStatement((BooleanExpression<?>) condition, body);
 	}
 
 	@Override
 	public MyStatement createIf(MyExpression condition, MyStatement ifBody, MyStatement elseBody,
 			SourceLocation sourceLocation) {
-		return (MyStatement) new IfStatement(condition, ifBody, elseBody);
+		return (MyStatement) new IfStatement((BooleanExpression<?>) condition, ifBody, elseBody);
 	}
 	
 	// don't have to implement
@@ -89,7 +93,7 @@ public class TaskFactory implements ITaskFactory<MyExpression<?,?>, MyStatement,
 
 	@Override
 	public MyStatement createMoveTo(MyExpression position, SourceLocation sourceLocation) {
-		return (MyStatement) new MoveToStatement((PositionExpression) position);
+		return (MyStatement) new MoveToStatement((PositionExpression<?>) position);
 	}
 
 	@Override
@@ -149,22 +153,22 @@ public class TaskFactory implements ITaskFactory<MyExpression<?,?>, MyStatement,
 	@Override
 	public MyExpression createNot(MyExpression expression, SourceLocation sourceLocation) {
 		// TODO Auto-generated method stub
-		return new NotExpression((BooleanExpression) expression);
+		return new NotExpression((BooleanExpression<?>)expression);
 	}
 
 	@Override
 	public MyExpression createAnd(MyExpression left, MyExpression right, SourceLocation sourceLocation) {
-		List<BooleanExpression> expressions = new ArrayList<>();
-		expressions.add((BooleanExpression) left);
-		expressions.add((BooleanExpression) right);
+		List<BooleanExpression<?>> expressions = new ArrayList<>();
+		expressions.add((BooleanExpression<?>) left);
+		expressions.add((BooleanExpression<?>) right);
 		return new AndExpression(expressions);
 	}
 
 	@Override
 	public MyExpression createOr(MyExpression left, MyExpression right, SourceLocation sourceLocation) {
-		List<BooleanExpression> expressions = new ArrayList<>();
-		expressions.add((BooleanExpression) left);
-		expressions.add((BooleanExpression) right);
+		List<BooleanExpression<?>> expressions = new ArrayList<>();
+		expressions.add((BooleanExpression<?>) left);
+		expressions.add((BooleanExpression<?>) right);
 		return (new OrExpression(expressions));
 	}
 
@@ -206,7 +210,8 @@ public class TaskFactory implements ITaskFactory<MyExpression<?,?>, MyStatement,
 
 	@Override
 	public MyExpression createLiteralPosition(int x, int y, int z, SourceLocation sourceLocation) {
-		return new LiteralPositionExpression(new PositionVector(x,y,z));
+		PositionVector position = new PositionVector(x,y,z);
+		return new LiteralPositionExpression(position);
 	}
 
 	@Override

@@ -264,8 +264,8 @@ public class MyExpressionTest {
 	
 	@Test
 	public void myExpressionType() {
-		MyExpression<UnitExpression,Boolean> temp = new CarriesItemExpression(new ThisExpression());
-		boolean result = temp.evaluate(unit);
+		MyExpression temp = new CarriesItemExpression(new ThisExpression());
+		boolean result = (boolean) temp.evaluate(unit);
 		assertEquals(false, result);
 	}
 

@@ -7,5 +7,5 @@ public abstract class IsSomethingExpression<I> extends BooleanExpression<I> {
 	public IsSomethingExpression(I value) {
 		super(value);
 	}
-
+	
 }
