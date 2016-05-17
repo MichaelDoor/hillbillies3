@@ -6,7 +6,6 @@ import java.util.*;
 import be.kuleuven.cs.som.annotate.*;
 import hillbillies.model.PositionVector;
 import hillbillies.model.World;
-import objects.Unit;
 import ogp.framework.util.Util;
 import hillbillies.model.Faction;
 

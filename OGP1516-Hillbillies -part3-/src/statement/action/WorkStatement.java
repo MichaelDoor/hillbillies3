@@ -11,7 +11,7 @@ public class WorkStatement extends ActionStatement<PositionVector> {
 	}
 
 	@Override
-	public void run(Unit unit) throws NullPointerException {
+	public void run(Unit unit) throws NullPointerException,IllegalArgumentException {
 		PositionVector target = this.getTarget().evaluate(unit);
 		unit.work(target);
 		this.setExecutionTarget(target);

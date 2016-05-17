@@ -33,6 +33,8 @@ public class TaskTest {
 	private MyStatement testActivity;
 	private Task testTask;
 	private Task testTask2;
+	private Faction testFaction;
+	private Scheduler testScheduler;
 
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
@@ -59,10 +61,12 @@ public class TaskTest {
 		// create a log
 		testWorld.collapse(new PositionVector(0,2,0));
 		
+		this.testFaction = new Faction();
+		
 		// create the unit to be used and an enemy and ally of it
-		unit = new Unit(new PositionVector(0,0,0), "Ikke", new Faction());
+		unit = new Unit(new PositionVector(0,0,0), "Ikke", testFaction);
 		testWorld.addUnit(unit);
-		ally = new Unit(new PositionVector(1,0,0), "Ikke", unit.getFaction());
+		ally = new Unit(new PositionVector(1,0,0), "Ikke", testFaction);
 		enemy = new Unit(new PositionVector(1,1,0), "Ikke", new Faction());
 		testWorld.addUnit(ally);
 		testWorld.addUnit(enemy);
@@ -72,14 +76,14 @@ public class TaskTest {
 		statements.add(new WorkStatement(new BoulderExpression()));
 		statements.add(new MoveToStatement(new LiteralPositionExpression(new PositionVector(0,1,0))));
 		this.testActivity = new SequenceStatement(statements);
-		testTask = new Task("test", 100, testActivity);
-		Scheduler scheduler = new Scheduler(new Faction());
-		testTask.addScheduler(scheduler);
+		testTask = new Task("test", 101, testActivity);
+		this.testScheduler = new Scheduler(testFaction);
+		testScheduler.addTask(testTask);
 		unit.startDefaultBehaviour();
 		testTask.setExecutor(unit);
 		
 		this.testTask2 = new Task("test", 100, new WorkStatement(new LiteralPositionExpression(new PositionVector(0,1,0))));
-		testTask2.addScheduler(scheduler);
+		testScheduler.addTask(testTask2);
 		testTask2.setExecutor(unit);
 	}
 
@@ -116,7 +120,8 @@ public class TaskTest {
 	
 	@Test
 	public void execute() {
-		testTask2.execute();
+		testTask2.setExecutor(null);
+		unit.startDefaultBehaviour();
 		testWorld.advanceTime(0.2);
 		assertEquals(true, unit.getActivityStatus().equals("work"));
 		double time = unit.getWorkTime();
@@ -129,7 +134,8 @@ public class TaskTest {
 	
 	@Test
 	public void interrupt() {
-		testTask2.execute();
+		testTask2.setExecutor(null);
+		unit.startDefaultBehaviour();
 		testWorld.advanceTime(2);
 		assertEquals(true, unit.getActivityStatus().equals("work"));
 		

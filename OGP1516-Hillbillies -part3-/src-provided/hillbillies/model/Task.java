@@ -1,13 +1,10 @@
-package task;
-
+package hillbillies.model;
 
 import java.util.*;
 
 import be.kuleuven.cs.som.annotate.*;
-import objects.Unit;
-import position.PositionVector;
-import scheduler.Scheduler;
-import statement.MyStatement;
+import hillbillies.model.Unit;
+import hillbillies.model.PositionVector;
 
 /**
  * A class of tasks, made to be scheduled by a scheduler.

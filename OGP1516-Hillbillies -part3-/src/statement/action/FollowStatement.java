@@ -13,7 +13,7 @@ public class FollowStatement extends ActionStatement<Unit> {
 	}
 
 	@Override
-	public void run(Unit unit) throws NullPointerException {
+	public void run(Unit unit) throws NullPointerException, IllegalArgumentException {
 		Unit target = this.getTarget().evaluate(unit);
 		unit.moveTo(target.getCubePositionVector());
 		this.setExecutionTarget(target);

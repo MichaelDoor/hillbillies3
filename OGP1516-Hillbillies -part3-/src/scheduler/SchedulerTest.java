@@ -17,6 +17,7 @@ import expression.position.LiteralPositionExpression;
 import faction.Faction;
 import hillbillies.part2.listener.DefaultTerrainChangeListener;
 import objects.Unit;
+import ogp.framework.util.Util;
 import position.PositionVector;
 import statement.AssignmentStatement;
 import statement.MyStatement;
@@ -155,6 +156,17 @@ public class SchedulerTest {
 		testWorld.advanceTime(30);
 		assertEquals(true, testScheduler.getNbTasks() == 0);
 		assertEquals(true, tempS.getNbTasks() == 0);
+	}
+	
+	@Test
+	public void schedulerDelay() {
+		unit.startDefaultBehaviour();
+		testWorld.advanceTime(0.0009);
+		assertEquals(true, Util.fuzzyEquals(unit.getSchedulerDelay(),0.001));
+		assertEquals(false, testScheduler.hasWork(unit));
+		
+		testWorld.advanceTime(unit.getWorkTime());
+		assertEquals(true, unit.getSchedulerDelay() == 0);
 	}
 	
 	// test scheduler delay

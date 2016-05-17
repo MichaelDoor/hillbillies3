@@ -1,13 +1,11 @@
-package scheduler;
+package hillbillies.model;
 
 import java.util.*;
 import java.util.function.Function;
 import java.util.Comparator;
 
 import be.kuleuven.cs.som.annotate.*;
-import faction.Faction;
-import objects.Unit;
-import task.Task;
+
 
 /**
  * A class of schedulers.

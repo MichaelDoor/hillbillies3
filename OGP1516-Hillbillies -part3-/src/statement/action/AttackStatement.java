@@ -10,7 +10,7 @@ public class AttackStatement extends ActionStatement<Unit> {
 	}
 
 	@Override
-	public void run(Unit unit) throws NullPointerException {
+	public void run(Unit unit) throws NullPointerException, IllegalArgumentException {
 		Unit target = this.getTarget().evaluate(unit);
 		unit.attack(target);
 		this.setExecutionTarget(target);
