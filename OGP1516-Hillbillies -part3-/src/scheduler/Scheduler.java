@@ -634,7 +634,7 @@ public class Scheduler {
 	 * 			| this.getHighestPriorityTask().setExecutor(unit)
 	 * 			| this.addWorker(unit, task)
 	 * 			| task.execute()
-	 * @effect	The given unit's scheduler delay is reset.
+	 * @effect	The given unit's scheduler delay is reset if the given unit is assigned a task.
 	 * 			| unit.resetSchedulerDelay()
 	 * @throws NullPointerException
 	 * 			The given unit is not effective.
@@ -659,6 +659,8 @@ public class Scheduler {
 			this.addWorker(unit, task);
 			task.execute();
 		}
-		unit.resetSchedulerDelay();
+		// only when the unit can actually complete the task
+		if(unit.getTask() != null)
+			unit.resetSchedulerDelay();
 	}
 }

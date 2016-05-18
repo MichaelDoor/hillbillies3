@@ -8,7 +8,7 @@ public class AssignmentStatement<O> extends MyStatement {
 	public AssignmentStatement(String variableName, MyExpression value) throws NullPointerException{
 		this.setName(variableName);
 		this.setValue(value);
-		this.setExecuted(true);
+		this.setExecuted(false);
 	}
 	
 	public String getName() {
@@ -37,6 +37,7 @@ public class AssignmentStatement<O> extends MyStatement {
 	
 	@Override
 	public void run(Unit unit) {
+		this.setExecuted(true);
 	}
 	
 	@SuppressWarnings("unchecked")
