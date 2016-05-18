@@ -2,10 +2,10 @@ package objects;
 import java.util.*;
 
 import position.PositionVector;
+import task.Task;
 import world.World;
 import be.kuleuven.cs.som.annotate.*;
 import faction.Faction;
-
 import ogp.framework.util.Util;
 
 /**
@@ -96,6 +96,9 @@ import ogp.framework.util.Util;
  * @invar  The scheduler delay of each unit must be a valid scheduler delay for any
  *         unit.
  *       | isValidSchedulerDelay(getSchedulerDelay())
+ * @invar  The assigned task of each unit must be a valid assigned task for this
+ *         unit.
+ *       | isValidTask(getTask())
  * @author Michaël Dooreman
  * @version	0.23
  */
@@ -173,6 +176,8 @@ public class Unit extends GameObject {
 	 *       	| this.setTarget(null)
 	 * @effect 	The scheduler delay of this new unit is set to zero.
 	 *       	| this.setSchedulerDelay(0)
+	 * @effect 	The assigned task of this new unit is set to null.
+	 *       	| this.setTask(null)
 	 * @throws  IllegalArgumentException
 	 * 		    The given name is not a valid name.
 	 * 			| ! isValidName(name)
@@ -217,6 +222,7 @@ public class Unit extends GameObject {
 		this.setDefendAttempts(new HashMap<Unit,Boolean>());
 		this.setTarget(null);
 		this.setSchedulerDelay(0);
+		this.setTask(null);
 	}
 	
 	
@@ -2858,6 +2864,8 @@ public class Unit extends GameObject {
 	
 	/**
 	 * Terminate this unit.
+	 * @effect	If this unit has a task, the task is interrupted.
+	 * 			| this.getTask().interrupt()
 	 * @effect	This unit drops all objects from it's inventory at it's position and  is then removed from it's faction.
 	 * 			It's activity status, velocity, destination, faction, name, next position, world, 
 	 * 			path and work position are given the null reference. It's double hp and stamina are set 0.
@@ -2879,6 +2887,8 @@ public class Unit extends GameObject {
 	protected void terminate() throws IllegalStateException {
 		if(this.isTerminated())
 			throw new IllegalStateException("Already terminated.");
+		if(this.getTask() != null)
+			this.getTask().interrupt();
 		this.emptyInventory(this.getUnitPosition());
 		this.activityStatus = null;
 		this.destination = null;
@@ -3545,4 +3555,53 @@ public class Unit extends GameObject {
 	 * Variable registering the time any unit has to wait between random behavior faction work requests.
 	 */
 	public static final double randomWorkCoolDownTime = 0.001;
+	
+	/**
+	 * Return the assigned task of this unit.
+	 */
+	@Basic @Raw
+	public Task getTask() {
+		return this.task;
+	}
+	
+	/**
+	 * Check whether the given assigned task is a valid assigned task for
+	 * this unit.
+	 *  
+	 * @param  assigned task
+	 *         The assigned task to check.
+	 * @return True if and only if the given task has no executor and its specific assigned unit is null or this unit.
+	 *       | result == (task == null) || (task.getExecutor() == null) 
+	 *       |				&& ((task.getSpecificUnit() == null) || (task.getSpecificUnit().equals(this)))
+	*/
+	public boolean isValidTask(Task task) {
+		return  (task == null) || ((task.getExecutor() == null) 
+				&& ((task.getSpecificUnit() == null) || (task.getSpecificUnit().equals(this))));
+	}
+	
+	/**
+	 * Set the assigned task of this unit to the given assigned task.
+	 * 
+	 * @param  task
+	 *         The new assigned task for this unit.
+	 * @post   The assigned task of this new unit is equal to
+	 *         the given assigned task.
+	 *       | new.getTask() == task
+	 * @throws IllegalArgumentException
+	 *         The given assigned task is not a valid assigned task for this
+	 *         unit.
+	 *       | ! isValidTask(getTask())
+	 */
+	@Raw
+	public void setTask(Task task) 
+			throws IllegalArgumentException {
+		if (! isValidTask(task))
+			throw new NullPointerException();
+		this.task = task;
+	}
+	
+	/**
+	 * Variable registering the assigned task of this unit.
+	 */
+	private Task task;
 }

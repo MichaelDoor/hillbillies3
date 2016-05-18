@@ -123,6 +123,7 @@ public class SchedulerTest {
 		assertEquals(true, unit.getActivityStatus().equals("work"));
 		assertEquals(true, testScheduler.hasAsWorker(unit));
 		assertEquals(true, testScheduler.getTaskOf(unit).equals(testTask));
+		assertEquals(true, unit.getTask().equals(testTask));
 		
 		ally.startDefaultBehaviour();
 		testScheduler.giveWork(ally);
@@ -156,6 +157,7 @@ public class SchedulerTest {
 		testWorld.advanceTime(30);
 		assertEquals(true, testScheduler.getNbTasks() == 0);
 		assertEquals(true, tempS.getNbTasks() == 0);
+		assertEquals(true, unit.getTask() == null);
 	}
 	
 	@Test

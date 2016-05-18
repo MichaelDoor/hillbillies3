@@ -312,15 +312,17 @@ public class Task {
 	
 	/**
 	 * Interrupt this task.
-	 * @effect	This task's executor is removed from it's faction's scheduler's worker set, this faction's executor is set to null, 
-	 * it's activity is rolled back and it's priority is reduced.
+	 * @effect	This task's executor is removed from it's faction's scheduler's worker set, this task's executor's task is set to null
+	 * 			this faction's executor is set to null, it's activity is rolled back and it's priority is reduced.
 	 * 			| this.getExecutor().getFaction().getScheduler().removeWorker(this.getExecutor())
+	 * 			| this.getExecutor().setTask(null);
 	 * 			| this.setExecutor(null)
 	 * 			| this.getActivity().rollback()
 	 * 			| this.reducePriority()
 	 */
 	public void interrupt() {
 		this.getExecutor().getFaction().getScheduler().removeWorker(this.getExecutor());
+		this.getExecutor().setTask(null);
 		this.setExecutor(null);
 		this.getActivity().rollback();
 		this.reducePriority();
@@ -328,15 +330,17 @@ public class Task {
 	
 	/**
 	 * Terminate this task.
-	 * @effect	This task's executor is set to null, it's specific unit also and it's schedulerSet is emptied and it's activity
-	 * 			is set to null.
+	 * @effect	This task's executor's task is set to null, this tasks executor is set to null, 
+	 * 			it's specific unit also and it's schedulerSet is emptied and it's activity is set to null.
 	 * 			| this.emptySchedulerSet()
+	 * 			| this.getExecutor().setTask(null)
 	 * 			| this.setExecutor(null)
 	 * 			| this.setSpecificUnit(null)
 	 * 			| this.activity = null
 	 */
 	private void terminate() {
 		this.emptySchedulerSet();
+		this.getExecutor().setTask(null);
 		this.setExecutor(null);
 		this.setSpecificUnit(null);
 		this.activity = null;

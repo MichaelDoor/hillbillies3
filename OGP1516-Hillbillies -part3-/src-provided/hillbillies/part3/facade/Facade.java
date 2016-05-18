@@ -457,8 +457,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public Task getAssignedTask(Unit unit) throws ModelException {
-		// TODO Auto-generated method stub
-		return unit.getFaction().getScheduler().getTaskOf(unit);
+		return unit.getTask();
 	}
 
 	@Override
@@ -488,7 +487,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public boolean areTasksPartOf(Scheduler scheduler, Collection<Task> tasks) throws ModelException {
-		return scheduler.hasAsTasks((Set<Task>) tasks);
+		return scheduler.hasAsTasks(tasks);
 	}
 
 	@Override

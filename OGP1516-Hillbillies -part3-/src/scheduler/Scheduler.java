@@ -341,16 +341,16 @@ public class Scheduler {
 	
 	/**
 	 * Check whether this scheduler has all the tasks of a given collection as it's task.
-	 * @param taskSet	The given set of tasks.
-	 * @return	True if and only if this scheduler has each element of the given set of tasks as one of it's tasks.
-	 * 			| for each(Task task : taskSet) {this.hasAsTask(task)}
+	 * @param taskCollection	The given collection of tasks.
+	 * @return	True if and only if this scheduler has each element of the given collection of tasks as one of it's tasks.
+	 * 			| for each(Task task : taskCollection) {this.hasAsTask(task)}
 	 * 			| result == true
 	 * @throws NullPointerException
 	 */
-	public boolean hasAsTasks(Set<Task> taskSet) throws NullPointerException{
-		if(taskSet == null)
+	public boolean hasAsTasks(Collection<Task> taskCollection) throws NullPointerException{
+		if(taskCollection == null)
 			throw new NullPointerException();
-		for(Task task : taskSet){
+		for(Task task : taskCollection){
 			if(! this.hasAsTask(task))
 				return false;
 		}
@@ -630,7 +630,7 @@ public class Scheduler {
 	 * @effect	If the given unit is already a worker of this scheduler, the task it's mapped to is executed.
 	 * 			| this.workers.get(unit).execute()
 	 * @effect	If the given unit is not yet a worker of this scheduler, it is set set as the executor of this scheduler's highest 
-	 * 			priority task, it is also mapped to it as a worker of this scheduler and the task is executed.
+	 * 			priority task, its task is set to that task it is also mapped to it as a worker of this scheduler and the task is executed.
 	 * 			| this.getHighestPriorityTask().setExecutor(unit)
 	 * 			| this.addWorker(unit, task)
 	 * 			| task.execute()
@@ -654,6 +654,7 @@ public class Scheduler {
 			if(! this.hasWork(unit))
 				throw new IllegalStateException();
 			Task task = this.getHighestPriorityTask();
+			unit.setTask(task);
 			task.setExecutor(unit);
 			this.addWorker(unit, task);
 			task.execute();
