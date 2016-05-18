@@ -67,23 +67,23 @@ public class TaskFactory implements ITaskFactory<MyExpression, MyStatement, Task
 
 	@Override
 	public MyStatement createMoveTo(MyExpression position, SourceLocation sourceLocation) {
-		return (MyStatement) new MoveToStatement((PositionExpression<?>) position);
+		return (MyStatement) new MoveToStatement(position);
 	}
 
 	@Override
 	public MyStatement createWork(MyExpression position, SourceLocation sourceLocation) {
 		// TODO Auto-generated method stub
-		return (MyStatement) new WorkStatement((PositionExpression<?>) position);
+		return (MyStatement) new WorkStatement(position);
 	}
 
 	@Override
 	public MyStatement createFollow(MyExpression unit, SourceLocation sourceLocation) {
-		return (MyStatement) new FollowStatement((UnitExpression) unit);
+		return (MyStatement) new FollowStatement(unit);
 	}
 
 	@Override
 	public MyStatement createAttack(MyExpression unit, SourceLocation sourceLocation) {
-		return (MyStatement) (new AttackStatement((UnitExpression) unit));
+		return (MyStatement) (new AttackStatement(unit));
 	}
 
 	@Override

@@ -10,7 +10,7 @@ public class NextToExpression extends PositionExpression<PositionExpression<?>> 
 	}
 	
 	@Override
-	protected PositionExpression<?> getValue() {
+	public PositionExpression<?> getValue() {
 		return (PositionExpression<?>) super.getValue();
 	}
 	

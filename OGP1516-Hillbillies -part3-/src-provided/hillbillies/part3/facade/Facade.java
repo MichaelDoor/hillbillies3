@@ -472,7 +472,7 @@ public class Facade implements IFacade {
 
 	@Override
 	public Scheduler getScheduler(Faction faction) throws ModelException {
-		return new Scheduler(faction);
+		return faction.getScheduler();
 	}
 
 	@Override

@@ -11,7 +11,7 @@ public abstract class CubeIsSomething<I> extends IsSomethingExpression<I> {
 	}
 	
 	@Override
-	protected PositionExpression<?> getValue() {
+	public PositionExpression<?> getValue() {
 		return (PositionExpression<?>) super.getValue();
 	}
 	

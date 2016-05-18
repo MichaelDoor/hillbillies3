@@ -2524,11 +2524,15 @@ public class Unit extends GameObject {
 	 * 			| this.setDefaultBehaviour(false)
 	 * @effect	this unit's scheduler delay is set to zero.
 	 * 			| this.setSchedulerDelay(0)
+	 * @effect	If this unit has a task assigned to it, this task is interrupted.
+	 * 			| this.getTask().interrupt();
 	 */
 	@Raw
 	public void stopDefaultBehaviour() {
 		this.setDefaultBehaviour(false);
 		this.setSchedulerDelay(0);
+		if(this.getTask() != null)
+			this.getTask().interrupt();
 	}
 	
 	/**

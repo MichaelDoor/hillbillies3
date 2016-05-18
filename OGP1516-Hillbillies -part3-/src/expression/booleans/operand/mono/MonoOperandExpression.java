@@ -10,7 +10,7 @@ public abstract class MonoOperandExpression<I> extends OperandExpression<I> {
 	}
 	
 	@Override
-	protected BooleanExpression<?> getValue() {
+	public BooleanExpression<?> getValue() {
 		return (BooleanExpression<?>) super.getValue();
 	}
 

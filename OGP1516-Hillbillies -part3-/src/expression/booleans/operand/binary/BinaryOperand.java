@@ -13,7 +13,7 @@ public abstract class BinaryOperand<I> extends OperandExpression<I> {
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	protected List<? extends BooleanExpression<?>> getValue() {
+	public List<? extends BooleanExpression<?>> getValue() {
 		return (List<BooleanExpression<?>>) super.getValue();
 	}
 }

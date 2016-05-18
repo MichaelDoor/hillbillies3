@@ -2,18 +2,20 @@ package expression;
 
 import java.util.List;
 
+import expression.booleans.IBooleanExpression;
+import expression.position.IPositionExpression;
+import expression.unit.IUnitExpression;
 import objects.Unit;
 import statement.*;
 
-public class ReadVariableExpression<O> extends MyExpression {
+public class ReadVariableExpression<O> implements IBooleanExpression, IPositionExpression, IUnitExpression {
 
 	public ReadVariableExpression(String value) {
-		super(value);
+		this.setValue(value);
 	}
 	
-	@Override
-	protected String getValue() {
-		return (String) super.getValue();
+	public String getValue() {
+		return (String) this.value;
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -36,5 +38,16 @@ public class ReadVariableExpression<O> extends MyExpression {
 			return result;
 		}
 	}
+
+	public void setValue(Object value) {
+		this.value = value;
+	}
+	
+	private Object value;
+
+//	@Override
+//	public Object evaluate(Unit unit) {
+//		return this.getValue();
+//	}
 
 }

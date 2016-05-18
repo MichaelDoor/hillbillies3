@@ -25,12 +25,12 @@ public class Faction {
 	 * Initialize this new faction.
 	 *
 	 * @effect The unit set of this new faction is set to an empty hash set.
-	 * @effect	The scheduler of this new faction is set to null.
+	 * @effect	A new scheduler is initialized for this faction..
 	 */
 	public Faction()
 			throws NullPointerException {
 		this.setUnitSet(new HashSet<Unit>());
-		this.setScheduler(null);
+		new Scheduler(this);
 	}
 	
 	/**

@@ -10,7 +10,7 @@ public abstract class UnitIsSomethingExpression<I> extends IsSomethingExpression
 	}
 	
 	@Override
-	protected UnitExpression getValue() {
+	public UnitExpression getValue() {
 		return (UnitExpression) super.getValue();
 	}
 
