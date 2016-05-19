@@ -58,6 +58,9 @@ public class World {
 	 * @effect The material set of this new world is set to an empty hash set.
 	 * @effect The faction set of this new world is set to a new hash set.
 	 * @effect The workshop set of this new world is set to the an new hash set.
+	 * @effect The connectedToBorder checker is initialized to a new connected to border checker with the number of x, y and z cubes
+	 * 			this world has.
+	 * 			| this.connectedToBorder = new ConnectedToBorder(this.getNbCubesX(), this.getNbCubesY(), this.getNbCubesZ())
 	 */
 	public World(int[][][] terrainTypes, TerrainChangeListener modelListener)
 			throws NullPointerException {
@@ -88,7 +91,7 @@ public class World {
 	 *  
 	 * @param  terrain matrix
 	 *         The terrain matrix to check.
-	 * @return 
+	 * @return The given terrain types is effective.
 	 *       | result == (terrainTypes != null)
 	*/
 	public static boolean isValidTerrainMatrix(int[][][] terrainTypes) {
@@ -161,7 +164,8 @@ public class World {
 	 *  
 	 * @param  cube matrix
 	 *         The cube matrix to check.
-	 * @return 
+	 * @return The given cube matrix is effective and its size corresponds to the space created by the number of x, y and z cubes
+	 * 			of this world.
 	 *       | result == (cubeMatrix != null) && (cubeMatrix.length == this.getNbCubesX()
 	 *       				&& (cubeMatrix[0].length == this.getNbCubesY() && (cubeMatrix[0][0].length == this.getNbCubesZ()))
 	*/
@@ -294,7 +298,7 @@ public class World {
 	 * @param y The given y component of the targeted cube.
 	 * @param z The given z component of the targeted cube.
 	 * @param terrainType	The given terrain type.
-	 * @effect	The old cube is replaced by a new cube with the same position and the given terrain type.
+	 * @effect	The old cube is replaced by a new cube with the same position and the given terrain type and content.
 	 * @throws IllegalArgumentException
 	 * 			The given coordinates are outside of this world.
 	 */
@@ -343,7 +347,7 @@ public class World {
 	 *  
 	 * @param  connectedToBorder
 	 *         The connected to border checker to check.
-	 * @return 
+	 * @return The given connectedToBorder is effective.
 	 *       | result == (connectedToBorder != null)
 	*/
 	@Raw
@@ -358,7 +362,7 @@ public class World {
 	
 	/**
 	 * Check this world's terrain for solid cubes that are not connected to a border and make the cave-in.
-	 * @effect	Every solid cube in this world's cube matrix is checked to see if it's connected to a border. If not, it's caves-in.
+	 * @effect	Every solid cube in this world's cube matrix is checked to see if it's connected to a border. If not, it caves-in singly.
 	 */
 	private void makeValidTerrain() {
 		Cube[][][] cubeMatrix = this.getCubeMatrix();
@@ -602,7 +606,7 @@ public class World {
 	 *  
 	 * @param  unitSet
 	 *         The unit set to check.
-	 * @return 
+	 * @return The given unit set is effective.
 	 *       | result == (unitSet != null)	
 	*/
 	public static boolean isValidUnitSet(Set<Unit> unitSet) {
@@ -638,8 +642,9 @@ public class World {
 	/**
 	 * Add a given unit to this world.
 	 * @param unit	The given unit.
-	 * @effect	If the unit is from a faction that does not exist in this world, this faction is added to this world. the unit is added
-	 * 			to this world's unit set and to the cube corresponding to its position, the given unit's world is set to this world.
+	 * @effect	If the unit is from a faction that does not exist in this world, this faction is added to this world. The unit's world
+	 * 			is changed to this world, the unit is added to this world's unit set and is added as content to the cube corresponding to
+	 * 			its cube position.
 	 * @throws	IllegalArgumentException
 	 * 			This world can not have the given unit as one of it's units.
 	 * @throws IllegalStateException
@@ -848,7 +853,7 @@ public class World {
 	 *  
 	 * @param  material set
 	 *         The material set to check.
-	 * @return 
+	 * @return True if and only if the given material set is effective.
 	 *       | result == (materialSet != null)
 	*/
 	public static boolean isValidMaterialSet(Set<Material> materialSet) {
@@ -885,7 +890,7 @@ public class World {
 	 * Add a given material to this world.
 	 * @param material	The given material.
 	 * @effect	The given material is added to the material set of this world and to the cube in which it is located, it's world is
-	 * 			change to this world.
+	 * 			changed to this world.
 	 */
 	public void addMaterial(Material material){
 		this.getMaterialSet().add(material);
@@ -977,7 +982,7 @@ public class World {
 	 *  
 	 * @param  faction set
 	 *         The faction set to check.
-	 * @return 
+	 * @return The given faction set is effective.
 	 *       | result == (factionSet != null)
 	*/
 	private static boolean isValidFactionSet(Set<Faction> factionSet) {
@@ -1228,7 +1233,7 @@ public class World {
 	 * @param oldCubePosition	The old cube position of this unit.
 	 * @param newCubePosition	The new cube position of this unit.
 	 * @effect	If the given game object is still in the cube referred to by the given old cube position, it is removed from that
-	 * 			cube. The given game object us added to the cube of the given new cube position.
+	 * 			cube. The given game object is added to the cube of the given new cube position.
 	 * @throws NullPointerException
 	 * 			The given unit or one of the given positions is not effective.
 	 * @throws IllegalArgumentException
@@ -1417,7 +1422,7 @@ public class World {
 	
 	/**
 	 * Get all boulders in this world.
-	 * @return	A set of all boulders that are in this unit's material set.
+	 * @return	A set of all boulders that are in this world's material set.
 	 */
 	public Set<Boulder> getBoulders() {
 		Set<Boulder> result = new HashSet<Boulder>();
@@ -1430,7 +1435,7 @@ public class World {
 	
 	/**
 	 * Get all logs in this world.
-	 * @return	A set of all logs that are in this unit's material set.
+	 * @return	A set of all logs that are in this world's material set.
 	 */
 	public Set<Log> getLogs() {
 		Set<Log> result = new HashSet<Log>();
@@ -1719,7 +1724,7 @@ public class World {
 	 * Check whether a given target position can be reached from a given current position.
 	 * @param targetPosition	The targeted position.
 	 * @param currentPosition	The current position.
-	 * @return	True if and only if no path can be determined to reach the given target position, starting from the given current
+	 * @return	True if and only if a path can be determined to reach the given target position, starting from the given current
 	 * 			position.
 	 * @throws NullPointerException
 	 * 			The given target position and/or current position is/are not effective.

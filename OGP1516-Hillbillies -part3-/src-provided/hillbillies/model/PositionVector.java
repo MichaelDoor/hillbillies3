@@ -132,8 +132,8 @@ public class PositionVector {
 	 * @param position	The first position.
 	 * @param target	The second position.
 	 * @return 	A vector with the argument differences of the given position vectors as its arguments.
-	 * 			| result == new PositionVector (position1.getXArgument()-position2.getXArgument(), position1.getYArgument()-position2.getYArgument(), 
-	 *			|						position1.getZArgument()-position2.getZArgument())
+	 * 			| result == new PositionVector (position.getXArgument()-target.getXArgument(), position.getYArgument()-target.getYArgument(), 
+	 *			|						position.getZArgument()-target.getZArgument())
 	 * @throws	NullPointerException
 	 * 			At least one of the given vectors is not effective.
 	 * 			| (position == null) || (target == null)
@@ -148,9 +148,9 @@ public class PositionVector {
 	 * @param position	The first position.
 	 * @param target	The second position.
 	 * @return	The distance between the two given positions, calculated with the mathematical formula for distance.
-	 * 			| result == Math.sqrt(Math.pow(2,calcDifferenceVector(position1, position2).getXArgument()) 
-	 * 			| 									+ Math.pow(2,calcDifferenceVector(position1, position2).getYArgument())
-	 * 			| 											 + Math.pow(2,calcDifferenceVector(position1, position2).getZArgument()))
+	 * 			| result == Math.sqrt(Math.pow(2,calcDifferenceVector(target, position).getXArgument()) 
+	 * 			| 									+ Math.pow(2,calcDifferenceVector(target, position).getYArgument())
+	 * 			| 											 + Math.pow(2,calcDifferenceVector(target, position).getZArgument()))
 	 * @throws	NullPointerException
 	 * 			At least one of the given vectors is not effective.
 	 * 			| (position == null) || (target == null)
@@ -167,6 +167,12 @@ public class PositionVector {
 		return distance;
 	}
 	
+	/**
+	 * Return the hash code for this position vector.
+	 * @return	The concatenation of this position vector's components multiplied by 1000.
+	 * 			| result == (int) Long.parseLong((int) (this.getXArgument()*1000) + "" + (int) (this.getYArgument()*1000)
+	 * 			|			 + "" + (int) (this.getZArgument()*1000))
+	 */
 	@Override
 	public int hashCode(){
 		int x = (int) (this.getXArgument()*1000);
@@ -199,6 +205,7 @@ public class PositionVector {
 	 * Return a position vector with the integer form of the components of the given position as its components.
 	 * @param position	The given position.
 	 * @return	A position vector with the integer form of the components of the given position as its components.
+	 * 			| result == new PositionVector((int) position.getXArgument(), (int) position.getYArgument(), (int) position.getZArgument())
 	 * @throws NullPointerException
 	 * 			The given position is not effective.
 	 */

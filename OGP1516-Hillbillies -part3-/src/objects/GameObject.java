@@ -58,12 +58,8 @@ public abstract class GameObject {
 	 *  
 	 * @param  unitPosition
 	 *         The unitPosition to check.
-	 * @return True if and only if this game object has no world or it is a valid standing position in this game objects world.
-	 *       | result == (this.getWorld() == null) ||
-	 *       | 		(((int) position.getXArgument() < 0) || ((int) position.getYArgument() < 0) 
-	 *       | 		|| ((int) position.getZArgument() < 0) || ((int) position.getXArgument() > this.getWorld().getNbCubesX()) 
-	 *       | 			|| ((int) position.getYArgument() > this.getWorld().getNbCubesY())
-	 *		 |				|| ((int) position.getZArgument() > this.getWorld().getNbCubesZ()))
+	 * @return 	True if and only if this game object has no world or it is a valid standing position in this game objects world.
+	 *       	| result == (this.getWorld() == null) || (this.getWorld().isValidPosition(position))
 	 * @throws	NullPointerException
 	 * 			The position is not effective.
 	 * 			| position == null
@@ -174,7 +170,8 @@ public abstract class GameObject {
 	 *  
 	 * @param  world
 	 *         The world to check.
-	 * @return 
+	 * @return True if and only if the given world is not effective or this game object's cube position is a valid position
+	 * 			for the given world.
 	 *       | result == (world == null) || (world.isValidPosition(new PositionVector(x,y,z)))
 	*/
 	protected boolean isValidWorld(World world) {
@@ -410,7 +407,7 @@ public abstract class GameObject {
 	
 	/**
 	 * Check whether this game object is terminated.
-	 * @return	True if and only if his game object's next position and world are null and it's velocity zero.
+	 * @return	True if and only if this game object's next position and world are null and it's velocity zero.
 	 */
 	public boolean isTerminated() {
 		PositionVector velocity = this.getCurrentVelocityBasic();

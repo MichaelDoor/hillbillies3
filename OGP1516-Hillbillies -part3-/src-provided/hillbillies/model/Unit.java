@@ -115,8 +115,8 @@ public class Unit extends GameObject {
 	 * @param  toughness	The toughness for this new unit.
 	 * @param  weight		The weight for this new unit.
 	 * @param  faction 		The faction for this new unit.
-	 * @effect	The position of this new unit is set to the cube centre of the given position.
-	 * 			| this.setUnitPosition(PositionVector.centrePosition(position))
+	 * @effect 	A new game obkect with the centre position of the given position is initialized.
+	 * 			| super(PositionVector.centrePosition(position))
 	 * @post    The name of this new unit equals the given name.
 	 * 			| new.getName().equals(name)
 	 * @effect	The strength of this new unit is set to the given strength.
@@ -188,6 +188,9 @@ public class Unit extends GameObject {
 	 * @throws	NullPointerException
 	 * 			The position is not effective.
 	 * 			| position == null
+	 * @throws	NullPointerException
+	 * 			The given faction is not effective.
+	 * 			| faction == null
 	 */
 	public Unit(PositionVector position, String name, int strength, int agility, int toughness,int weight, Faction faction) 
 													throws IllegalArgumentException, NullPointerException {
@@ -254,7 +257,7 @@ public class Unit extends GameObject {
 	}
 	
 	/**
-	 * Initialize this new Unit with given position, name and random attribute values.
+	 * Initialize this new Unit with given position, name, faction and random attribute values.
 	 * @param  position		The position for this new unit.
 	 * @param  name			The name for this new unit.
 	 * @param  faction		The faction for this new unit.
@@ -270,6 +273,9 @@ public class Unit extends GameObject {
 	 * @throws	NullPointerException
 	 * 			The position is not effective.
 	 * 			| position == null
+	 * @throws	NullPointerException
+	 * 			The given faction is not effective.
+	 * 			| faction == null
 	 */
 	public Unit(PositionVector position, String name, Faction faction) throws IllegalArgumentException, NullPointerException {
 		this(position, name, randomInitialAttValue(), randomInitialAttValue(), randomInitialAttValue(), randomInitialAttValue(),
@@ -644,7 +650,7 @@ public class Unit extends GameObject {
 	 *  
 	 * @param  maxHP
 	 *         The maxHP to check.
-	 * @return 
+	 * @return True if and only if the given max hp equals the result of this unit's max hp formula.
 	 *       | result == (maxHP == calcMaxHPStam(getWeight(), getToughness()))
 	*/
 	@Raw
@@ -690,7 +696,7 @@ public class Unit extends GameObject {
 	 *  
 	 * @param  maxStamina
 	 *         The maxStamina to check.
-	 * @return 
+	 * @return True if and only if the given max stamina equals the result of this unit's max stamina formula.
 	 *       | result == (maxStamina == calcMaxHPStam(this.getWeight(), this.getToughness()))
 	*/
 	@Raw
@@ -754,7 +760,8 @@ public class Unit extends GameObject {
 	 *  
 	 * @param  currentHP
 	 *         The currentHP to check.
-	 * @return 
+	 * @return 	True if and only if the given current hp is greater than or equal to 0 and smaller than or equal to this unit's maximum
+	 * 			hp.
 	 *       | result == ((currentHP <= this.getMaxHP()) && (currentHP >= 0))
 	*/
 	@Raw
@@ -801,7 +808,8 @@ public class Unit extends GameObject {
 	 *  
 	 * @param  currentStamina
 	 *         The currentStamina to check.
-	 * @return 
+	 * @return True if and only if the given current stamina is greater than or equal to 0 and smaller than or equal to this unit's maximum
+	 * 			stamina.
 	 *       | result == ((currentStamina >= 0) && (currentStamina <= this.getMaxStamina()))
 	*/
 	@Raw
@@ -864,12 +872,15 @@ public class Unit extends GameObject {
 	 * Let time advance for this unit for a given amount of time.
 	 * @param time	The given amount of time.
 	 * @effect	This unit's activity status is checked.
-	 * 			If this unit is falling, and it reached it's next position and destination, it's hitpoints are decreased by 10 and
+	 * 			If its status is not effective, this method terminates.
+	 * 			If it's current position is equal to its next position and destination, its queue is cleared.
+	 * 			If this unit is falling, and it reached it's next position and destination and
 	 * 			it either continues falling if it can, else it's activity status is set to default and it's velocity 
 	 * 			to the zero vector.
 	 * 			If this unit is falling and has not yet reached it's next position and destination, it moves in the fall direction.
 	 * 			If this unit should fall, it falls and time advances for the given time.
-	 * 			If this unit is doing nothing and it's default behaviour is activated, it'll do a random action.
+	 * 			If this unit is doing nothing and it's default behaviour is activated, it'll do a random action, if this results in
+	 * 			executing a task, its scheduler delay time is reduced by the given time.
 	 * 			If the unit is attacking, it continues it's attack.
 	 * 			If it's minimum rest counter isn't zero yet, it'll continue to rest until the counter reaches zero, then it'll 
 	 * 			continue or start with it's planned activity.
@@ -877,7 +888,7 @@ public class Unit extends GameObject {
 	 * 			If it didn't reach it's destination or next position yet or it's activity status is move, it moves.
 	 * 			If it's activity status is work, it works.
 	 * 			If it's activity status is rest, it rests.
-	 * 			If it's activity status is default and default behaviour is not activated, is starts doing a random activity and it's 
+	 * 			If it's activity status is default and default behaviour is not activated, its 
 	 * 			automatic rest counter increases by the given time.
 	 * @throws	IllegalArgumentException
 	 * 			Time is either negative or equal to or greater then 0.2s.
@@ -1064,6 +1075,8 @@ public class Unit extends GameObject {
 	 * Let's this unit move to the center of the adjacent cube of which a position in it is given, if the unit is not already moving
 	 * and the given position does not equal the unit's position.
 	 * @param position	A combination of an x,y, and z unit PositionVector.
+	 * @effect	If the sum of the given position and this unit's current position is not equal to this unit's current position, is
+	 * 			not a solid position and is a valid position for this unit's world and a valid adjacent for this unit, this method works.
 	 * @effect	This unit's activity status is set to 'move'.
 	 * 			| this.setActivityStatus("move")
 	 * @effect	The current velocity of this unit is set by using the given position.
@@ -1137,24 +1150,6 @@ public class Unit extends GameObject {
 		}
 	}
 	
-	@Deprecated
-	public boolean isSolidCorner(PositionVector adjacentPosition) throws NullPointerException, IllegalArgumentException {
-		if(! this.isValidAdjacent(adjacentPosition)
-				&& (Math.abs(position.getXArgument()) + Math.abs(position.getYArgument()) + Math.abs(position.getZArgument()) == 2))
-			throw new IllegalArgumentException();
-		PositionVector position1 = PositionVector.sum(this.getCubePositionVector(), 
-				new PositionVector(adjacentPosition.getXArgument(),0,0));
-		PositionVector position2 = PositionVector.sum(this.getCubePositionVector(), 
-				new PositionVector(0,adjacentPosition.getYArgument(),0));
-		PositionVector position3 = PositionVector.sum(this.getCubePositionVector(), 
-				new PositionVector(0,0,adjacentPosition.getZArgument()));
-		boolean flag1 = this.getWorld().isSolidPosition(position1);
-		boolean flag2 = this.getWorld().isSolidPosition(position2);
-		boolean flag3 = this.getWorld().isSolidPosition(position3);
-		return (flag1 || flag2 || flag3);
-	}
-	
-	
 	/**
 	 * Calculates the velocity for a given speed, the target position vector and the start position vector.
 	 * @param speed	The speed.
@@ -1205,6 +1200,7 @@ public class Unit extends GameObject {
 	 * 			| result == this.currentVelocity
 	 */
 	public PositionVector getCurrentVelocity() {
+		// since we don't want the unit falling at double speed when sprint is activated
 		if(this.activityStatus.equals("fall"))
 			return this.currentVelocity;
 		if(this.getSprint() == true){
@@ -1427,11 +1423,16 @@ public class Unit extends GameObject {
 	 * 			when it doesn't reach it's next position within the given time.
 	 * 			| this.setUnitPosition(PositionVector.sum(this.getUnitPosition(), PositionVector.multiplyBy(dt, this.getCurrentVelocity())))
 	 * @effect	This unit has reached it's next position if time was sufficient to reach it, it gains 1xp if it wasn't falling,
-	 * 			it's activity status, is set to default and it's current velocity to the zero vector. 
+	 * 			its activity status, is set to default and it's current velocity to the zero vector. If it fell, 
+	 * 			its hitpoints are decreased by 10. If it died, this method is terminated.
 	 * 			| this.setUnitPosition(new PositionVector(this.getNextPosition().getXArgument(),this.getNextPosition().getYArgument(),
 	 *			|	this.getNextPosition().getZArgument())))
 	 *			| if(! this.getActivityStatus().equals("fall"))
 	 *			| 	this.gainExp(1)
+	 *			| if(this.getActivityStatus().equals("fall"))
+	 *			| 	this.decreaseHP(10)
+	 *			| if(this.isTerminated())
+	 *			| 	return
 	 *			| this.setActivityStatus("default")
 	 *			| this.setCurrentVelocity(new PositionVector(0, 0, 0))
 	 * @effect	In case the unit has time left after reaching it's next position, time advances.
@@ -1454,6 +1455,7 @@ public class Unit extends GameObject {
 			velocity = GameObject.fallVelocity;
 		double speed = PositionVector.calcDistance((new PositionVector(0,0,0)), velocity);
 		double travelTime = distance/speed;
+		
 		this.setOrientation( Math.atan2(velocity.getYArgument(), velocity.getXArgument()));
 		if (travelTime <= dt) {
 			this.setUnitPosition(new PositionVector(this.getNextPosition().getXArgument(),this.getNextPosition().getYArgument(),
@@ -1491,7 +1493,7 @@ public class Unit extends GameObject {
 	 * any unit.
 	 * @param  decimal stamina
 	 *         The decimal stamina to check.
-	 * @return 
+	 * @return True if and only if the given double stamina is greater than zero and smaller than or equal to this unit's maximum stamina.
 	 *       | result == (doubleStamina > 0) && (doubleStamina <= this.getMaxStamina())
 	*/
 	@Raw
@@ -1540,7 +1542,7 @@ public class Unit extends GameObject {
 	 *  
 	 * @param  work time
 	 *         The work time to check.
-	 * @return 
+	 * @return True if and only if the given work time is greater than or equal to zero
 	 *       | result == (workTime >= 0) && (workTime <= (500/this.getStrength())
 	*/
 	private boolean isValidWorkTime(double workTime) {
@@ -1708,6 +1710,8 @@ public class Unit extends GameObject {
 	 * 			| this.pickUpLog(this.getWorkPosition())
 	 * @effect	If this unit's working position refers to a wood cube or a rock cube, the cube collapses.
 	 * 			| this.getWorld().collapse(this.getWorkPosition())
+	 * @effect	This unit gains 10 experience.
+	 * 			| this.gainExp(10)
 	 * @throws	IllegalStateException
 	 * 			This unit's work time is 0 or it's activity status is not 'work'.
 	 * 			| (this.getWorkTime() != 0) || (! this.getActivityStatus().equals("work"))
@@ -1759,9 +1763,8 @@ public class Unit extends GameObject {
 	/**
 	 * Make this unit pick up a given material.
 	 * @param material	The given material.
-	 * @effect	The given material is added to this unit's inventory, the given material is removed from this unit's world.
+	 * @effect	The given material is added to this unit's inventory.
 	 * 			| this.addMaterialToInventory(material)
-	 * 			| this.getWorld().removeMaterial(material)
 	 * @throws NullPointerException
 	 * 			The given material is not effective.
 	 * 			| material == null
@@ -1783,8 +1786,7 @@ public class Unit extends GameObject {
 						(int)this.getWorkPosition().getYArgument(), (int)this.getWorkPosition().getZArgument())))
 						|| (this.getInventory().size() == inventoryCapacity))
 			throw new IllegalArgumentException("Pick up material exception");
-		this.addMaterialToInventory(material);
-		
+		this.addMaterialToInventory(material);	
 	}
 	
 	/**
@@ -1926,7 +1928,7 @@ public class Unit extends GameObject {
 	 *  
 	 * @param  attack time
 	 *         The attack time to check.
-	 * @return 
+	 * @return True if and only if the given attackTime is greater than or equal to 0 and smaller than or equal to 1.
 	 *       | result == (attackTime >= 0) && (attackTime <= 1)
 	*/
 	private static boolean isValidAttackTime(double attackTime) {
@@ -2057,18 +2059,14 @@ public class Unit extends GameObject {
 			return false;
 	}
 	
-	//let produce also diagonal adjacent positions
 	/**
 	 * Return a random unit vector, giving the direction to a random adjacent cube of this unit.
 	 * @return	A random unit vector that is a valid adjacent position.
-	 * 			| result == new PositionVector(Random.nextInt(3)-1, Random.nextInt(3)-1, Random.nextInt(3)-1)
+	 * 			| result == new PositionVector(Random.nextInt(2)*(-1)*(Random.nextInt(1), Random.nextInt(2)*(-1)*(Random.nextInt(1), 
+	 * 			| 			Random.nextInt(2)*(-1)*(Random.nextInt(1))
+	 * 			| this.isValidAdjacent(result)
 	 */
 	private PositionVector randomAdjacent() {
-//		Random generator = new Random();
-//		PositionVector adjacent = new PositionVector(generator.nextInt(3)-1, generator.nextInt(3)-1, generator.nextInt(3)-1);
-//		while (! this.isValidAdjacent(adjacent))
-//			adjacent = new PositionVector(generator.nextInt(3)-1, generator.nextInt(3)-1, generator.nextInt(3)-1);
-//		return adjacent;
 		PositionVector zero = new PositionVector(0, 0, 0);
 		PositionVector xPlus = new PositionVector(1, 0, 0);
 		PositionVector yPlus = new PositionVector(0, 1, 0);
@@ -2196,7 +2194,7 @@ public class Unit extends GameObject {
 	}
 	
 	/**
-	 * Regenerate this unit's hitpoints for a given amount of time and give back the unused time.
+	 * Regenerate this unit's hitpoints for a given amount of time and gives back the unused time.
 	 * @param time	The given amount of time.
 	 * @pre 	The given time needs to be bigger than or equal to 0.
 	 * 			| time >= 0
@@ -2246,7 +2244,7 @@ public class Unit extends GameObject {
 	 *  
 	 * @param  double type hitpoints
 	 *         The double type hitpoints to check.
-	 * @return 
+	 * @return True if and only if the given double hp is greater than or equal to 0 and smaller than or equal to this unit's maximum hp.
 	 *       | result == (doubleHP >= 0) && (doubleHP <= this.getMaxHP())
 	*/
 	@Raw
@@ -2263,10 +2261,10 @@ public class Unit extends GameObject {
 	 * @pre    The given double type hitpoints must be a valid double type hitpoints for any
 	 *         unit.
 	 *       | isValidDoubleHP(doubleHP)
-	 * @effect   The double type hitpoints and current hitpoints of this unit are respectively equal to the given
+	 * @post   The double type hitpoints and current hitpoints of this unit are respectively equal to the given
 	 *         double type hitpoints and it's integer form rounded up.
 	 *       | new.getDoubleHP() == doubleHP
-	 *       | this.setDoubleHP((int) (Math.ceil(doubleHP)))
+	 *       | this.getDoubleHP((int) (Math.ceil(doubleHP)))
 	 */
 	@Model @Raw
 	private void setDoubleHP(double doubleHP) {
@@ -2333,12 +2331,13 @@ public class Unit extends GameObject {
 	 *  
 	 * @param  minimum rest counter
 	 *         The minimum rest counter to check.
-	 * @return 
-	 *       | result == minRestCounter <= 0.2/(this.getToughness()/200)) || (minRestCounter >= 0)
+	 * @return The given minimum rest counter is smaller than or equal to the result of the minimum rest formula applied to this unit or
+	 * 			is greater than or equal to 0.
+	 *       | result == minRestCounter <= 0.2/(this.getToughness()/200)) && (minRestCounter >= 0)
 	*/
 	@Raw
 	private boolean isValidMinRestCounter(double minRestCounter) {
-		return ((minRestCounter <= 0.2/(this.getToughness()/200.0)) || (minRestCounter >= 0));
+		return ((minRestCounter <= 0.2/(this.getToughness()/200.0)) && (minRestCounter >= 0));
 	}
 	
 	/**
@@ -2416,7 +2415,7 @@ public class Unit extends GameObject {
 	 *  
 	 * @param  automatic rest counter
 	 *         The automatic rest counter to check.
-	 * @return 
+	 * @return The given automatic rest counter is greater than or equal to 0.
 	 *       | result == (autRestCounter >= 0)
 	*/
 	private static boolean isValidAutRestCounter(double autRestCounter) {
@@ -2605,7 +2604,7 @@ public class Unit extends GameObject {
 	/**
 	 * Generate a valid random initial value for any attribute of any unit.
 	 * @return	A random value between the maxInitialAttValue and the minInitialAttValue.
-	 * 			| new Random().nextInt(maxInitialAttValue-minInitialAttValue+1)+minInitialAttValue
+	 * 			| result == new Random().nextInt(maxInitialAttValue-minInitialAttValue+1)+minInitialAttValue
 	 */
 	private static int randomInitialAttValue() {
 		Random generator = new Random();
@@ -2636,7 +2635,7 @@ public class Unit extends GameObject {
 	 *  
 	 * @param  faction
 	 *         The faction to check.
-	 * @return 
+	 * @return The given faction is effective.
 	 *       | result == (faction != null)
 	*/
 	public static boolean isValidFaction(Faction faction) {
@@ -2684,7 +2683,7 @@ public class Unit extends GameObject {
 	 *  
 	 * @param  experience
 	 *         The experience to check.
-	 * @return 
+	 * @return The given experience is greater than or equal to zero and smaller than or equal to the maximum experience of any unit.
 	 *       | result == ((exp >= 0) && (exp <= maxExp))
 	*/
 	public static boolean isValidExp(int exp) {
@@ -2817,7 +2816,7 @@ public class Unit extends GameObject {
 	 *  
 	 * @param  world
 	 *         The world to check.
-	 * @return 
+	 * @return The given world is effective and can have this unit as one of its units.
 	 *       | result == (world == null) || (world.canHaveAsUnit(this)
 	*/
 	@Override
@@ -2873,7 +2872,8 @@ public class Unit extends GameObject {
 	 * 			| this.getTask().interrupt()
 	 * @effect	This unit drops all objects from it's inventory at it's position and  is then removed from it's faction.
 	 * 			It's activity status, velocity, destination, faction, name, next position, world, 
-	 * 			path and work position are given the null reference. It's double hp and stamina are set 0.
+	 * 			path and work position are given the null reference. It's double hp and stamina are set 0. It's also terminated as 
+	 * 			a game object.
 	 * 			| this.emptyInventory(this.getUnitPosition())
 	 * 			| this.getFaction().removeUnit(this)
 	 * 			| this.activityStatus = null
@@ -2884,6 +2884,7 @@ public class Unit extends GameObject {
 	 *			| this.workPosition = null
 	 *			| this.setDoubleHP(0)
 	 *			| this.setDoubleStam(0)
+	 *			| super.terminate()
 	 * @throws	IllegalStateException
 	 * 			This unit is already terminated.
 	 * 			| this.isTerminated()
@@ -2909,11 +2910,11 @@ public class Unit extends GameObject {
 	
 	/**
 	 * Check whether this unit is terminated.
-	 * @return	True is and only if this unit no longer has a world, nor faction and it's activity status, velocity
-	 * 			destination, faction, name, next position and world equal null and it's double hp an stamina are zero.
+	 * @return	True is and only if this unit no longer has a world, nor faction and nor activity status,
+	 * 			destination, name and it's double hp an stamina are zero and it's terminated as a game object.
 	 * 			| (this.world == null)
-	 * 			| && (this.activityStatus == null) && (this.currentVelocity == null) && (this.destination == null)
-	 * 			| && (this.faction == null) && (this.name == null) && (this.nextPosition == null) && (this.world == null)
+	 * 			| && (this.activityStatus == null) &&  (this.destination == null)
+	 * 			| && (this.faction == null) && (this.name == null) && (super.isTerminated())
 	 * 			| && (this.getDoubleHP == 0.0) && (this.getDoubleStamina == 0.0)
 	 */
 	public boolean isTerminated(){
@@ -2939,7 +2940,7 @@ public class Unit extends GameObject {
 	 *  
 	 * @param  path queue
 	 *         The path queue to check.
-	 * @return 
+	 * @return The given queue is effective.
 	 *       | result == (queue != null)
 	*/
 	public static boolean isValidQueue(List<PositionVector> queue) {
@@ -2991,7 +2992,7 @@ public class Unit extends GameObject {
 	 *  
 	 * @param  inventory
 	 *         The inventory to check.
-	 * @return 
+	 * @return The given inventory is effective.
 	 *       | result == (inventory != null)
 	*/
 	public static boolean isValidInventory(Set<Material> inventory) {
@@ -3064,11 +3065,8 @@ public class Unit extends GameObject {
 	/**
 	 * Remove a given material from this unit's inventory.
 	 * @param material	The given material.
-	 * @effect	The given material is removed from his unit's inventory, the material's position is set 
-	 * 			to this unit's current position and is added to this unit's world.
+	 * @effect	The given material is removed from his unit's inventory.
 	 * 			| this.getInventory().remove(material)
-	 * 			| material.setUnitPosition(this.getUnitPosition())
-	 * 			| this.getWorld().addMaterial(material)
 	 * @throws IllegalArgumentException
 	 * 			The given material is not in this unit's inventory.
 	 * 			| ! this.inInventory(material)
@@ -3175,7 +3173,7 @@ public class Unit extends GameObject {
 	 *  
 	 * @param  defend attempts map
 	 *         The defend attempts map to check.
-	 * @return 
+	 * @return The given defend attempts is effective.
 	 *       | result == (defendAttempts != null)
 	*/
 	public static boolean isValidDefendAttempts(HashMap<Unit,Boolean> defendAttempts) {
@@ -3250,8 +3248,7 @@ public class Unit extends GameObject {
 	 * Check whether this unit can have a given attacker in a defend attempt.
 	 * @param attacker	The given attacking unit.
 	 * @return	True if and only if the given attacker is effective and a unit of this unit's world or this unit is terminated.
-	 * 			| result == ((attacker != null) && (this.getWorld().hasAsUnit(attacker)) && (! this.hasAsDefendAttempt(attacker)))
-	 * 			|  || (this.isTerminated())
+	 * 			| result == (((attacker != null) && ((this.isTerminated()) || (this.getWorld().hasAsUnit(attacker)))) )
 	 */
 	public boolean canHaveAsDefendAttempt(Unit attacker){
 		return (((attacker != null) && ((this.isTerminated()) || (this.getWorld().hasAsUnit(attacker)))) );
@@ -3478,7 +3475,7 @@ public class Unit extends GameObject {
 	 *  
 	 * @param  scheduler delay
 	 *         The scheduler delay to check.
-	 * @return 
+	 * @return The given scheduler delay is effective.
 	 *       | result == (schedulerDelay >= 0)
 	*/
 	public static boolean isValidSchedulerDelay(double schedulerDelay) {
