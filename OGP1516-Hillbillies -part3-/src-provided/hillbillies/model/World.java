@@ -35,7 +35,7 @@ import ogp.framework.util.Util;
  *         world.
  *       | isValidWorkshopSet(getWorkshopSet())
  * @author Michaël
- * @version 0.7
+ * @version 2.5
  */
 public class World {
 	

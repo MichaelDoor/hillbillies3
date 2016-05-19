@@ -38,7 +38,7 @@ import hillbillies.util.*;
  *         world.
  *       | isValidWorkshopSet(getWorkshopSet())
  * @author Michaël
- * @version 1.5
+ * @version 2.5
  */
 public class World {
 	

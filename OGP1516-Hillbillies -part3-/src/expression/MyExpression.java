@@ -2,7 +2,7 @@ package expression;
 
 import objects.Unit;
 
-public abstract class MyExpression implements IMyExpression{
+public abstract class MyExpression {
 
 	public MyExpression(Object value) {
 		this.setValue(value);
@@ -10,11 +10,11 @@ public abstract class MyExpression implements IMyExpression{
 	
 	private Object value;
 	
-	private void setValue(Object value){
+	protected void setValue(Object value){
 		this.value = value;
 	}
 	
-	public Object getValue(){
+	protected Object getValue(){
 		return this.value;
 	}
 	

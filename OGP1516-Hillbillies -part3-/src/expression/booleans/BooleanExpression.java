@@ -3,7 +3,7 @@ package expression.booleans;
 import expression.MyExpression;
 import objects.Unit;
 
-public abstract class BooleanExpression<I> extends MyExpression implements IBooleanExpression{
+public abstract class BooleanExpression<I> extends MyExpression {
 
 	public BooleanExpression(I value) {
 		super(value);

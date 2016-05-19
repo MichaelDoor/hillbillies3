@@ -3,7 +3,7 @@ package expression.unit;
 import expression.MyExpression;
 import objects.Unit;
 
-public abstract class UnitExpression extends MyExpression implements IUnitExpression{
+public abstract class UnitExpression extends MyExpression {
 
 	public UnitExpression() {
 		super(null);

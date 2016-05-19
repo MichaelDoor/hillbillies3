@@ -17,7 +17,7 @@ import hillbillies.model.Task;
  *       | hasProperTasks()
  * 
  * @author Michaël
- * @version	0.00
+ * @version	1.00
  *
  */
 public class Scheduler {

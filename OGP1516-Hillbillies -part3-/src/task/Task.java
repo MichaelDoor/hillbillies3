@@ -29,7 +29,7 @@ import statement.MyStatement;
  *       | isValidSchedulerSet(getSchedulerSet())
  *       
  * @author Michaël
- * @version	0.0
+ * @version	1.0
  */
 public class Task {
 	

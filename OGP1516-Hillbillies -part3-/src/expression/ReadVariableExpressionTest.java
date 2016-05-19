@@ -29,8 +29,7 @@ public class ReadVariableExpressionTest {
 	@SuppressWarnings("unused")
 	@Test
 	public void casting() {
-		ReadVariableExpression<Unit> temp1 = new ReadVariableExpression<Unit>("h");
-		IMyExpression temp = temp1;
+		MyExpression temp1 = new ReadVariableExpression<Unit>("h");
 	}
 
 }

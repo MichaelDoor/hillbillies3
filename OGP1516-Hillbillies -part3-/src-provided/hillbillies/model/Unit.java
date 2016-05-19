@@ -101,7 +101,7 @@ import hillbillies.model.Faction;
  *         unit.
  *       | isValidTask(getTask())
  * @author Michaël Dooreman
- * @version	0.23
+ * @version	2.5
  */
 public class Unit extends GameObject {
 	

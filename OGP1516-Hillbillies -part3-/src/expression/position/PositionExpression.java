@@ -4,7 +4,7 @@ import expression.MyExpression;
 import objects.Unit;
 import position.PositionVector;
 
-public abstract class PositionExpression<I> extends MyExpression implements IPositionExpression{
+public abstract class PositionExpression<I> extends MyExpression {
 
 	public PositionExpression(I value) {
 		super(value);
