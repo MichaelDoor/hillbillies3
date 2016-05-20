@@ -6,7 +6,7 @@ import hillbillies.model.PositionVector;
 
 public abstract class PositionExpression<I> extends MyExpression {
 
-	public PositionExpression(I value) {
+	PositionExpression(I value) {
 		super(value);
 	}
 

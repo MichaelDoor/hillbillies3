@@ -130,6 +130,9 @@ public class Faction {
 	
 	/**
 	 * Variable registering the unit set of this faction.
+	 * @invar	The referenced set is effective.
+	 * @invar	Each unit in the set has this faction as its faction.
+	 * @invar	Each unit in this set is alive.
 	 */
 	private final HashSet<Unit> unitSet = new HashSet<Unit>();
 	

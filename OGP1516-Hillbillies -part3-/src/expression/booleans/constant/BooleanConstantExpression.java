@@ -4,7 +4,7 @@ import expression.booleans.BooleanExpression;
 
 public abstract class BooleanConstantExpression extends BooleanExpression<Boolean> {
 
-	public BooleanConstantExpression() {
+	BooleanConstantExpression() {
 		super(null);
 	}
 	

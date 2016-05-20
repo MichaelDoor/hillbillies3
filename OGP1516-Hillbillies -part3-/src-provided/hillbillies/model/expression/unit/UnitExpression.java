@@ -5,7 +5,7 @@ import hillbillies.model.Unit;
 
 public abstract class UnitExpression extends MyExpression {
 
-	public UnitExpression() {
+	UnitExpression() {
 		super(null);
 	}
 	

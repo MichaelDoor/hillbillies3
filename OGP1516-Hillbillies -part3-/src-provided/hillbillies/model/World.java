@@ -726,6 +726,9 @@ public class World {
 	
 	/**
 	 * Variable registering the unit set of this world.
+	 * @invar	The referenced set is effective
+	 * @invar	Each unit in this set has this world as its world.
+	 * @invar	Each unit in this set is alive.
 	 */
 	private final Set<Unit> unitSet = new HashSet<Unit>();
 	
@@ -1047,6 +1050,7 @@ public class World {
 	
 	/**
 	 * Variable registering the faction set of this world.
+	 * @invar	The referenced set is effective.
 	 */
 	private final Set<Faction> factionSet = new HashSet<Faction>();
 	
@@ -1790,6 +1794,9 @@ public class World {
 	
 	/**
 	 * Variable registering the workshop set of this world.
+	 * @invar	The referenced set is effective.
+	 * @invar	Each position in the set is a valid position for this world.
+	 * @invar	Each position in the set references to a workshop in this world.
 	 */
 	private final Set<PositionVector> workshopSet = new HashSet<PositionVector>();
 	

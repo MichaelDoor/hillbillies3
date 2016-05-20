@@ -6,7 +6,7 @@ import objects.Unit;
 
 public abstract class CubeIsSomething<I> extends IsSomethingExpression<I> {
 
-	public CubeIsSomething(I value) {
+	CubeIsSomething(I value) {
 		super(value);
 	}
 	

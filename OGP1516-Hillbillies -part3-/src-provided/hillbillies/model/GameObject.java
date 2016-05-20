@@ -45,7 +45,8 @@ public abstract class GameObject {
 	 * @throws	NullPointerException
 	 * 			The given position is not effective.
 	 */
-	public GameObject(PositionVector position) throws IllegalArgumentException, NullPointerException {
+	@Model
+	GameObject(PositionVector position) throws IllegalArgumentException, NullPointerException {
 		this.setUnitPosition(position);
 		this.setWorld(null);
 		this.setActivityStatus("default");

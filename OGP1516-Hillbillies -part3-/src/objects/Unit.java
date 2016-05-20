@@ -62,9 +62,8 @@ import ogp.framework.util.Util;
  * @invar  The path queue of each unit must be a valid path queue for any
  *         unit.
  *       | isValidQueue(getQueue())
- * @invar  The inventory of each unit must be a valid inventory for any
- *         unit.
- *       | isValidInventory(getInventory())
+ * @invar  Each unit must have a proper inventory.
+ *       | hasProperInventory()
  * @invar  The work position of each unit must be a valid work position.
  *       | this.isValidWorkPosition(getWorkPosition())
  * @invar  The defend attempts map of each unit must be a valid defend attempts map for any
@@ -148,8 +147,6 @@ public class Unit extends GameObject {
 	 *       	| this.setExp(0)
 	 * @effect 	The path queue of this new unit is set to an empty hash map.
 	 *       	| this.setQueue(new ArrayList<PositionVector>())
-	 * @effect 	The inventory of this new unit is set to an empty hash set.
-	 *       	| this.setInventory(new HashSet<Material>())
 	 * @effect 	The work position of this new unit is set to null.
 	 *       	| this.setWorkPosition(null)
 	 * @effect 	The defend attempts map of this new unit is set to an empty map.
@@ -202,7 +199,6 @@ public class Unit extends GameObject {
 		faction.addUnit(this);
 		this.setExp(0);
 		this.setQueue(new ArrayList<PositionVector>());
-		this.setInventory(new HashSet<Material>());
 		this.setWorkPosition(null);
 		this.setDefendAttempts(new HashMap<Unit,Boolean>());
 		this.setTarget(null);
@@ -2980,31 +2976,7 @@ public class Unit extends GameObject {
 		return (inventory != null);
 	}
 	
-	/**
-	 * Set the inventory of this unit to the given inventory.
-	 * 
-	 * @param  inventory
-	 *         The new inventory for this unit.
-	 * @post   The inventory of this new unit is equal to
-	 *         the given inventory.
-	 *       | new.getInventory() == inventory
-	 * @throws NullPointerException
-	 *         The given inventory is not a valid inventory for any
-	 *         unit.
-	 *       | ! isValidInventory(getInventory())
-	 */
-	@Raw
-	public void setInventory(Set<Material> inventory) 
-			throws NullPointerException {
-		if (! isValidInventory(inventory))
-			throw new NullPointerException();
-		this.inventory = inventory;
-	}
 	
-	/**
-	 * Variable registering the inventory of this unit.
-	 */
-	private Set<Material> inventory;
 
 	/**
 	 * Add a given material to this unit's inventory.
@@ -3086,6 +3058,44 @@ public class Unit extends GameObject {
 			return false;
 		return this.getInventory().contains(material);
 	}
+	
+	/**
+	 * Check whether this unit has a proper inventory.
+	 * @return	True if and only if this unit can have each of the materials in its inventory as its inventory materials.
+	 * 			| if(for(Material material : this.inventory)
+	 * 			| 	this.canHaveAsInventoryMaterial(material))
+	 * 			| result == true
+	 */
+	public boolean hasProperInventory() {
+		for(Material material : this.inventory){
+			if(! this.canHaveAsInventoryMaterial(material))
+				return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Check whether this unit can have the given material in its inventory.
+	 * @param material	The given material.
+	 * @return	True if and only if the given material is effective, not terminated and has this unit's world as its world.
+	 * 			| result == (material != null) && (! material.isTerminated()) && (material.getWorld().equals(this.getWorld()))
+	 */
+	public boolean canHaveAsInventoryMaterial(Material material) {
+		return (material != null) && (! material.isTerminated()) && (material.getWorld().equals(this.getWorld()));
+	}
+	
+	/**
+	 * Variable registering the inventory of this unit.
+	 * @invar	The referenced set is effective.
+	 * 			| this.inventory != null
+	 * @invar	Each material in the inventory must have this unit's world as its world.
+	 * 			| for(Material material : this.inventory)
+	 * 			| 	material.getWorld().equals(this.getWorld)
+	 * @invar	Each material in the inventory is not terminated.
+	 * 			| for(Material material : this.inventory)
+	 * 			| 	(! material.isTerminated())
+	 */
+	private final Set<Material> inventory = new HashSet<Material>();
 	
 	/**
 	 * Return the work position of this unit.

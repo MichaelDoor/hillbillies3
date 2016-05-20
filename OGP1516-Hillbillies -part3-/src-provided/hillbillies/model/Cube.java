@@ -40,7 +40,8 @@ public abstract class Cube {
 	 * @throws	IllegalArgumentException
 	 * 			The given position is not a valid position for this cube.
 	 */
-	public Cube(PositionVector position)
+	@Model
+	Cube(PositionVector position)
 			throws IllegalArgumentException {
 		this.setPosition(position);
 		this.setContent(new HashSet<GameObject>());

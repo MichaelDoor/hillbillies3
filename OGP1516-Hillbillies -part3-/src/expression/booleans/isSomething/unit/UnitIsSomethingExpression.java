@@ -5,7 +5,7 @@ import expression.unit.UnitExpression;
 
 public abstract class UnitIsSomethingExpression<I> extends IsSomethingExpression<I> {
 
-	public UnitIsSomethingExpression(I value) {
+	UnitIsSomethingExpression(I value) {
 		super(value);
 	}
 	

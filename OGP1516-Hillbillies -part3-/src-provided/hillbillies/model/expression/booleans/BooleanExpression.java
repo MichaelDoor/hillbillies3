@@ -5,7 +5,7 @@ import hillbillies.model.Unit;
 
 public abstract class BooleanExpression<I> extends MyExpression {
 
-	public BooleanExpression(I value) {
+	protected BooleanExpression(I value) {
 		super(value);
 	}
 	

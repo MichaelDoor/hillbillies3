@@ -6,7 +6,7 @@ import hillbillies.model.statement.MyStatement;
 
 public abstract class ActionStatement<O> extends MyStatement {
 
-	public ActionStatement(MyExpression target) {
+	ActionStatement(MyExpression target) {
 		this.setTarget(target);
 		this.setExecutionTarget(null);
 	}

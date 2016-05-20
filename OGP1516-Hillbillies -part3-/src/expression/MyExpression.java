@@ -4,7 +4,7 @@ import objects.Unit;
 
 public abstract class MyExpression {
 
-	public MyExpression(Object value) {
+	protected MyExpression(Object value) {
 		this.setValue(value);
 	}
 	

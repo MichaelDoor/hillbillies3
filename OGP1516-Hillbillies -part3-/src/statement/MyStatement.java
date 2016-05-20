@@ -9,7 +9,7 @@ public abstract class MyStatement {
 	/**
 	 * Create a new statement. It's execution status is automatically set to false.
 	 */
-	public MyStatement() {
+	protected MyStatement() {
 		this.setExecuted(false);
 	}
 	

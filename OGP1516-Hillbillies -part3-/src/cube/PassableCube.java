@@ -2,6 +2,7 @@ package cube;
 
 import java.util.HashSet;
 
+import be.kuleuven.cs.som.annotate.Model;
 import be.kuleuven.cs.som.annotate.Raw;
 import objects.GameObject;
 import position.PositionVector;
@@ -20,7 +21,8 @@ public abstract class PassableCube extends Cube {
 	 * @throws IllegalArgumentException	
 	 * 			The given position is not a valid position for the new passable cube.
 	 */
-	public PassableCube(PositionVector position) throws IllegalArgumentException {
+	@Model
+	PassableCube(PositionVector position) throws IllegalArgumentException {
 		super(position);
 	}
 	

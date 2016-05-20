@@ -5,7 +5,7 @@ import hillbillies.model.expression.booleans.operand.OperandExpression;
 
 public abstract class MonoOperandExpression<I> extends OperandExpression<I> {
 
-	public MonoOperandExpression(I value) {
+	MonoOperandExpression(I value) {
 		super(value);
 	}
 	

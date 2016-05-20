@@ -23,7 +23,8 @@ public abstract class Material extends GameObject {
 	 * @throws	NullPointerException
 	 * 			The given position is not effective.
 	 */
-	public Material(PositionVector position){
+	@Model
+	Material(PositionVector position){
 		super(position);
 		this.setWeight();
 	}

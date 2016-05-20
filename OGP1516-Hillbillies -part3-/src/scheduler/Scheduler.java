@@ -624,6 +624,10 @@ public class Scheduler {
 	
 	/**
 	 * Variable registering the units working on tasks of this scheduler, together with the task they're working on.
+	 * @invar	The referenced map is effective.
+	 * 			| workers != null
+	 * @invar	Each unit in this map has it's mapped task as its task.
+	 * @invar	Each task in this map has its key as its executor.
 	 */
 	private final Map<Unit,Task> workers = new HashMap<Unit,Task>();
 	
