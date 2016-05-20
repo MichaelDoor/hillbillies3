@@ -1359,7 +1359,7 @@ public class World {
 	/**
 	 * Get the enemies in neighboring cubes of this unit, including the unit's cube.
 	 * @param unit	The given unit.
-	 * @return	All adjacent units, that are not from this unit's faction.
+	 * @return	All adjacent units, that are not from this unit's faction and are alive.
 	 * @throws IllegalArgumentException
 	 * 			The given world does not have the given unit as one of it's units.
 	 * @throws NullPointerException
@@ -1374,7 +1374,7 @@ public class World {
 		for(Unit adjacentUnit : adjacentUnits)
 			result.add(adjacentUnit);
 		for(Unit adjacentUnit : adjacentUnits){
-			if(adjacentUnit.getFaction().equals(allyFaction))
+			if((adjacentUnit.getFaction().equals(allyFaction)) || (adjacentUnit.isTerminated()) || (adjacentUnit.getCurrentHP() <= 0))
 				result.remove(adjacentUnit);
 		}
 		return result;

@@ -925,7 +925,7 @@ public class Unit extends GameObject {
 					this.advanceTime(restingTime);
 				}
 			}
-		else if((this.getAutRestCounter() >= 180)) {
+		else if((this.getAutRestCounter() >= 180) && (! this.getActivityStatus().equals("fall")) && (! this.getActivityStatus().equals("attack"))) {
 			this.rest();
 			if(this.getActivityStatus().equals("rest")) {
 				this.resetAutRestCounter();
@@ -3242,13 +3242,13 @@ public class Unit extends GameObject {
 	/**
 	 * Check whether this unit can have a given attacker in a defend attempt.
 	 * @param attacker	The given attacking unit.
-	 * @return	True if and only if this unit's world is effective and the given attacker is effective and a unit of this unit's world 
-	 * 			or this unit is terminated.
-	 * 			| result == (this.getWorld() != null) ||(((attacker != null) && ((this.isTerminated()) || (this.getWorld().hasAsUnit(attacker)))) )
+	 * @return	True if and only if the attacker is effective and this unit is terminated or this unit is alive and has the same world
+	 * 			as the given attacker.
+	 * 			| result == (attacker != null) && ((this.isTerminated()) || ((this.getWorld() != null) && (this.getWorld().hasAsUnit(attacker))))
 	 */
 	@Raw
 	public boolean canHaveAsDefendAttempt(Unit attacker){
-		return (this.getWorld() != null) && (((attacker != null) && ((this.isTerminated()) || (this.getWorld().hasAsUnit(attacker)))) );
+		return (attacker != null) && ((this.isTerminated()) || ((this.getWorld() != null) && (this.getWorld().hasAsUnit(attacker))));
 	}
 	
 	/**
