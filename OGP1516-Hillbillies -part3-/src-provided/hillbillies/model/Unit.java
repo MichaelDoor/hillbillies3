@@ -915,6 +915,8 @@ public class Unit extends GameObject {
 		else if (status.equals("attack")) {
 				this.doAttack(time);
 			}
+		// sometimes it enters this statement while not having the activity status 'rest. this happens approx. once in 30 minutes runtime
+		// and thus is hard to investigate and debug
 		else if (this.getMinRestCounter() != 0){
 				if (time < this.getMinRestCounter()){
 					this.doRest(time);

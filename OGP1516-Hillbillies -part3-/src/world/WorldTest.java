@@ -812,4 +812,27 @@ public class WorldTest {
 		
 		assertEquals(true, (! world2.getWorkshopSet().isEmpty()));
 	}
+	
+	@Test
+	public void makeValidTerrain_CaveIn() {
+		int nbX = 3;
+		int nbY = 3;
+		int nbZ = 3;
+		int[][][] matrix = new int[nbX][nbY][nbZ];
+		matrix[0][0][0] = 0; matrix[1][0][0] = 0; matrix[2][0][0] = 0;
+		matrix[0][1][0] = 0; matrix[1][1][0] = 0; matrix[2][1][0] = 0;
+		matrix[0][2][0] = 0; matrix[1][2][0] = 0; matrix[2][2][0] = 0;
+		
+		matrix[0][0][1] = 0; matrix[1][0][1] = 0; matrix[2][0][1] = 0;
+		matrix[0][1][1] = 0; matrix[1][1][1] = 1; matrix[2][1][1] = 0;
+		matrix[0][2][1] = 0; matrix[1][2][1] = 0; matrix[2][2][1] = 0;
+		
+		matrix[0][0][2] = 0; matrix[1][0][2] = 0; matrix[2][0][2] = 0;
+		matrix[0][1][2] = 0; matrix[1][1][2] = 0; matrix[2][1][2] = 0;
+		matrix[0][2][2] = 0; matrix[1][2][2] = 0; matrix[2][2][2] = 0;
+		
+		World world2 =  new World(matrix, new DefaultTerrainChangeListener());
+		assertEquals(true, world2.getCube(1, 1, 1).getTerrainType() == 0);
+		assertEquals(true, (! world2.getMaterialSet().isEmpty()));
+	}
 }

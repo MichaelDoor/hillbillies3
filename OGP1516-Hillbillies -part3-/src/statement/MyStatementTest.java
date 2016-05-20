@@ -100,6 +100,8 @@ public class MyStatementTest {
 	
 	@Test
 	public void followStatement() {
+		enemy.moveTo(new PositionVector(1,2,0));
+		testWorld.advanceTime(3);
 		MyStatement temp = new FollowStatement(new EnemyExpression());
 		temp.run(unit);
 		testWorld.advanceTime(5);
