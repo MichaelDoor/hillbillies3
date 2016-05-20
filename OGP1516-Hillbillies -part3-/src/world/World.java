@@ -22,18 +22,14 @@ import hillbillies.util.*;
  *       | isValidCubeMatrix(getCubeMatrix())
  * @invar  Each cube can have its connected to border checker as connected to border checker.
  *       | canHaveAsConnectedToBorder(this.getConnectedToBorder())
- * @invar  The unit set of each world must be a valid unit set for any
- *         world.
- *       | isValidUnitSet(getUnitSet())
- * @invar  The object set of each world must be a valid object set for any
- *         world.
- *       | isValidObjectSet(getObjectSet())
- * @invar  The faction set of each world must be a valid faction set for any
- *         world.
- *       | isValidFactionSet(getFactionSet())
- * @invar  The workshop set of each world must be a valid workshop set for any
- *         world.
- *       | isValidWorkshopSet(getWorkshopSet())
+ * @invar  Each world must have proper units.
+ *       | hasPoperUnits()
+ * @invar  Each world must have proper materials.
+ *       | hasProperMaterials()
+ * @invar  Each world must have proper factions.
+ * 		 | hasProperFactions()
+ * @invar  Each world must have proper workshops.
+ *       | hasProperWorkshops()
  * @author Michaël
  * @version 2.5
  */
@@ -54,20 +50,12 @@ public class World {
 	 * @effect	The cube matrix of this world is initialized.
 	 * @effect	Initializes this world's connected to border checker.
 	 * @effect	This world's terrain is made valid.
-	 * @effect The unit set of this new world is set to an empty hash set.
-	 * @effect The material set of this new world is set to an empty hash set.
-	 * @effect The faction set of this new world is set to a new hash set.
-	 * @effect The workshop set of this new world is set to the an new hash set.
 	 * @effect The connectedToBorder checker is initialized to a new connected to border checker with the number of x, y and z cubes
 	 * 			this world has.
 	 * 			| this.connectedToBorder = new ConnectedToBorder(this.getNbCubesX(), this.getNbCubesY(), this.getNbCubesZ())
 	 */
 	public World(int[][][] terrainTypes, @Raw TerrainChangeListener modelListener)
 			throws NullPointerException {
-		this.setUnitSet(new HashSet<Unit>());
-		this.setMaterialSet(new HashSet<Material>());
-		this.setFactionSet(new HashSet<>());
-		this.setWorkshopSet(new HashSet<PositionVector>());
 		this.setTerrainMatrix(terrainTypes);
 		this.modelListener = modelListener;
 		this.initializeCubeMatrix();
@@ -613,32 +601,6 @@ public class World {
 	}
 	
 	/**
-	 * Set the unit set of this world to the given unit set.
-	 * 
-	 * @param  unitSet
-	 *         The new unit set for this world.
-	 * @post   The unit set of this new world is equal to
-	 *         the given unit set.
-	 *       | new.getUnitSet() == unitSet
-	 * @throws NullPointerException
-	 *         The given unit list is not a valid unit set for any
-	 *         world.
-	 *       | ! isValidUnitSet(getUnitSet())
-	 */
-	@Raw
-	public void setUnitSet(Set<Unit> unitSet) 
-			throws NullPointerException {
-		if (! isValidUnitSet(unitSet))
-			throw new NullPointerException();
-		this.unitSet = unitSet;
-	}
-	
-	/**
-	 * Variable registering the unit set of this world.
-	 */
-	private Set<Unit> unitSet;
-	
-	/**
 	 * Add a given unit to this world.
 	 * @param unit	The given unit.
 	 * @effect	If the unit is from a faction that does not exist in this world, this faction is added to this world. The unit's world
@@ -704,7 +666,7 @@ public class World {
 	}
 	
 	/**
-	 * Check whether this world can have the given unit as a unit.
+	 * Check whether this world could have the given unit as a unit.
 	 * @param unit	The given unit.
 	 * @return	True if and only if the unit's position is in this world and the unit is not already in this world and this world
 	 * 			has not yet reached it's maximum amount of allowed units and when this world has reached its maximum amount
@@ -741,6 +703,32 @@ public class World {
 		this.addUnit(unit);
 		return unit;
 	}
+	
+	/**
+	 * Check whether this world has a proper unit set.
+	 * @return	True if and only if this world can have each of its units as one of its units.
+	 */
+	public boolean hasProperUnits() {
+		for(Unit unit: this.unitSet){
+			if(! this.canHaveAsWorldUnit(unit))
+				return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Check whether this world can have a given unit as one of its units.
+	 * @param unit	The given unit.
+	 * @return	True if and only if the given unit is effective and has this world as its world.
+	 */
+	public boolean canHaveAsWorldUnit(Unit unit) {
+		return(unit != null) && (unit.getWorld().equals(this));
+	}
+	
+	/**
+	 * Variable registering the unit set of this world.
+	 */
+	private final Set<Unit> unitSet = new HashSet<Unit>();
 	
 	/**
 	 * Return a random position (integer coordinates) in this world.
@@ -860,32 +848,6 @@ public class World {
 	}
 	
 	/**
-	 * Set the material set of this world to the given material set.
-	 * 
-	 * @param  materialSet
-	 *         The new material set for this world.
-	 * @post   The material set of this new world is equal to
-	 *         the given material set.
-	 *       | new.getMaterialSet() == materialSet
-	 * @throws NullPointerException
-	 *         The given material set is not a valid material set for any
-	 *         world.
-	 *       | ! isValidMaterialSet(getMaterialSet())
-	 */
-	@Raw
-	public void setMaterialSet(Set<Material> materialSet) 
-			throws NullPointerException {
-		if (! isValidMaterialSet(materialSet))
-			throw new NullPointerException();
-		this.materialSet = materialSet;
-	}
-	
-	/**
-	 * Variable registering the material set of this world.
-	 */
-	private Set<Material> materialSet;
-	
-	/**
 	 * Add a given material to this world.
 	 * @param material	The given material.
 	 * @effect	The given material is added to the material set of this world and to the cube in which it is located, it's world is
@@ -930,17 +892,33 @@ public class World {
 		return this.getMaterialSet().contains(material);
 	}
 	
-//	/**
-//	 * Check whether this world's material set is a proper material set for this world.
-//	 * @return	true if and only if each material in this world's material set has a valid position.
-//	 */
-//	private boolean hasProperMaterialSet(){
-//		for(Material material : this.getMaterialSet()){
-//			if(! this.isValidPosition(material.getUnitPosition()))
-//				return false;
-//		}
-//		return true;
-//	}
+	/**
+	 * Check whether this world's material set is a proper material set for this world.
+	 * @return	true if and only if each material in this world's material set has a valid position.
+	 */
+	public boolean hasProperMaterials(){
+		for(Material material : this.materialSet){
+			if(! this.canHaveAsMaterial(material))
+				return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Check whether this world can have a given material as it's material.
+	 * @param material	The given material.
+	 * @return	True if and only if the given material's position is a valid position for this world.
+	 * @throws NullPointerException
+	 * 			The given material is not effective.
+	 */
+	private boolean canHaveAsMaterial(Material material) throws NullPointerException{
+		return this.isValidPosition(material.getCubePositionVector());
+	}
+	
+	/**
+	 * Variable registering the material set of this world.
+	 */
+	private final Set<Material> materialSet = new HashSet<Material>();
 	
 	/**
 	 * Advance the time for this world by a given amount of time.
@@ -974,45 +952,6 @@ public class World {
 	private Set<Faction> getFactionSet() {
 		return this.factionSet;
 	}
-	
-	/**
-	 * Check whether the given faction set is a valid faction set for
-	 * any world.
-	 *  
-	 * @param  faction set
-	 *         The faction set to check.
-	 * @return The given faction set is effective.
-	 *       | result == (factionSet != null)
-	*/
-	private static boolean isValidFactionSet(Set<Faction> factionSet) {
-		return (factionSet != null);
-	}
-	
-	/**
-	 * Set the faction set of this world to the given faction set.
-	 * 
-	 * @param  factionSet
-	 *         The new faction set for this world.
-	 * @post   The faction set of this new world is equal to
-	 *         the given faction set.
-	 *       | new.getFactionSet() == factionSet
-	 * @throws NullPointerException
-	 *         The given faction set is not a valid faction set for any
-	 *         world.
-	 *       | ! isValidFactionSet(getFactionSet())
-	 */
-	@Raw @Model
-	private void setFactionSet(Set<Faction> factionSet) 
-			throws NullPointerException {
-		if (! isValidFactionSet(factionSet))
-			throw new NullPointerException();
-		this.factionSet = factionSet;
-	}
-	
-	/**
-	 * Variable registering the faction set of this world.
-	 */
-	private Set<Faction> factionSet;
 	
 	/**
 	 * Add a given faction to this world.
@@ -1088,6 +1027,23 @@ public class World {
 		}
 		return result;
 	}
+	
+	/**
+	 * Check whether this world has proper factions.
+	 * @return	True if and only if this world can have eacht of its factions as one of its faction.
+	 */
+	public boolean hasPoperFactions() {
+		for(Faction faction : this.factionSet){
+			if(! this.canHaveAsFaction(faction))
+				return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Variable registering the faction set of this world.
+	 */
+	private final Set<Faction> factionSet = new HashSet<Faction>();
 	
 	/**
 	 * Variable registering the maximum amount of active factions allowed in any world.
@@ -1686,16 +1642,6 @@ public class World {
 		}
 	}
 	
-	/**
-	 * Check whether this world can have a given material as it's material.
-	 * @param material	The given material.
-	 * @return	True if and only if the given material's position is a valid position for this world.
-	 * @throws NullPointerException
-	 * 			The given material is not effective.
-	 */
-	private boolean canHaveAsMaterial(Material material) throws NullPointerException{
-		return this.isValidPosition(material.getCubePositionVector());
-	}
 	
 	/**
 	 * Check whether a given unit from this world is a valid unit for this world.
@@ -1820,30 +1766,30 @@ public class World {
 	}
 	
 	/**
-	 * Set the workshop set of this world to the given workshop set.
-	 * 
-	 * @param  workshopSet
-	 *         The new workshop set for this world.
-	 * @post   The workshop set of this new world is equal to
-	 *         the given workshop set.
-	 *       | new.getWorkshopSet() == workshopSet
-	 * @throws NullPointerException
-	 *         The given workshop set is not a valid workshop set for any
-	 *         world.
-	 *       | ! isValidWorkshopSet(getWorkshopSet())
+	 * Check whether this world has proper workshops.
+	 * @return	True if and only if this world can have each position in its workshop set as a workshop position.
 	 */
-	@Raw
-	private void setWorkshopSet(Set<PositionVector> workshopSet) 
-			throws NullPointerException {
-		if (! isValidWorkshopSet(workshopSet))
-			throw new NullPointerException();
-		this.workshopSet = workshopSet;
+	public boolean hasProperWorkshops() {
+		for(PositionVector position : this.workshopSet){
+			if(! this.canHaveAsWorkshopPosition(position))
+				return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Check whether this world can have a given workshop position as one of its workshop position.
+	 * @param worskshopPosition	The given workshop position.
+	 * @return	True if and only if the given workshop position is effective, a valid position for this world and refers to a workshop.
+	 */
+	public boolean canHaveAsWorkshopPosition(PositionVector worskshopPosition) {
+		return (worskshopPosition != null) && (this.isValidPosition(worskshopPosition)) && (this.isWorkshop(worskshopPosition));
 	}
 	
 	/**
 	 * Variable registering the workshop set of this world.
 	 */
-	private Set<PositionVector> workshopSet;
+	private final Set<PositionVector> workshopSet = new HashSet<PositionVector>();
 	
 	/**
 	 * Check whether a cube at a given position in this world, contains a log.
