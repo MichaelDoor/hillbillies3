@@ -16,6 +16,8 @@ import hillbillies.model.PositionVector;
  * @invar  The content of each cube must be a valid content for any
  *         cube.
  *       | isValidContent(getContent())
+ * @invar	Each cube must have proper content.
+ * 		 | hasProperContent()
  *       
  * @author Michaël Dooreman
  * @version	0.2

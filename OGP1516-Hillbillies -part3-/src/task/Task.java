@@ -56,8 +56,6 @@ public class Task {
 	 *       | this.setExecutor(executor)
 	 * @effect The specific of this new task is set to null.
 	 *       | this.setSpecificUnit(null)
-	 * @effect The scheduler set of this new task is set to a new hash set.
-	 *       | this.setSchedulerSet(new HashSet<Scheduler>())
 	 * @throws	NullPointerException
 	 * 			The given name is not effective.
 	 * 			| name == null
@@ -71,7 +69,6 @@ public class Task {
 		this.setActivity(activity);
 		this.setExecutor(null);
 		this.setSpecificUnit(null);
-		this.setSchedulerSet(new HashSet<Scheduler>());
 	}
 	
 	/**
@@ -431,27 +428,6 @@ public class Task {
 	}
 	
 	/**
-	 * Set the scheduler set of this task to the given scheduler set.
-	 * 
-	 * @param  schedulerSet
-	 *         The new scheduler set for this task.
-	 * @post   The scheduler set of this new task is equal to
-	 *         the given scheduler set.
-	 *       | new.getSchedulerSet() == schedulerSet
-	 * @throws NullPointerException
-	 *         The given scheduler set is not a valid scheduler set for any
-	 *         task.
-	 *       | ! isValidSchedulerSet(getSchedulerSet())
-	 */
-	@Raw
-	private void setSchedulerSet(Set<Scheduler> schedulerSet) 
-			throws NullPointerException {
-		if (! isValidSchedulerSet(schedulerSet))
-			throw new NullPointerException();
-		this.schedulerSet = schedulerSet;
-	}
-	
-	/**
 	 * Adds a given scheduler to this unit's scheduler set.
 	 * @param scheduler	The given scheduler.
 	 * @effect	The given scheduler is added to this task's scheduler set.
@@ -549,5 +525,5 @@ public class Task {
 	/**
 	 * Variable registering the scheduler set of this task.
 	 */
-	private Set<Scheduler> schedulerSet;
+	private final Set<Scheduler> schedulerSet = new HashSet<Scheduler>();
 }

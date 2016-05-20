@@ -9,9 +9,8 @@ import java.util.*;
 /**
  * A class of factions.
  * 
- * @invar  The unit set of each faction must be a valid unit set for any
- *         faction.
- *       | isValidUnitSet(getUnitSet())
+ * @invar  Each faction must have proper units.
+ *       | hasPorperUnits()
  * @invar  The scheduler of each faction must be a valid scheduler for any
  *         faction.
  *       | isValidScheduler(getScheduler())
@@ -24,12 +23,10 @@ public class Faction {
 	/**
 	 * Initialize this new faction.
 	 *
-	 * @effect The unit set of this new faction is set to an empty hash set.
-	 * @effect	A new scheduler is initialized for this faction..
+	 * @effect	A new scheduler is initialized for this faction.
 	 */
 	public Faction()
 			throws NullPointerException {
-		this.setUnitSet(new HashSet<Unit>());
 		new Scheduler(this);
 	}
 	
@@ -57,45 +54,6 @@ public class Faction {
 	public HashSet<Unit> getUnitSet() {
 		return this.unitSet;
 	}
-	
-	/**
-	 * Check whether the given unit set is a valid unit set for
-	 * any faction.
-	 *  
-	 * @param  unit set
-	 *         The unit set to check.
-	 * @return 
-	 *       | result == (unitSet != null)
-	*/
-	private static boolean isValidUnitSet(HashSet<Unit> unitSet) {
-		return (unitSet != null);
-	}
-	
-	/**
-	 * Set the unit set of this faction to the given unit set.
-	 * 
-	 * @param  unitSet
-	 *         The new unit set for this faction.
-	 * @post   The unit set of this new faction is equal to
-	 *         the given unit set.
-	 *       | new.getUnitSet() == unitSet
-	 * @throws NullPointerException
-	 *         The given unit set is not a valid unit set for any
-	 *         faction.
-	 *       | ! isValidUnitSet(getUnitSet())
-	 */
-	@Raw @Model
-	private void setUnitSet(HashSet<Unit> unitSet) 
-			throws NullPointerException {
-		if (! isValidUnitSet(unitSet))
-			throw new NullPointerException();
-		this.unitSet = unitSet;
-	}
-	
-	/**
-	 * Variable registering the unit set of this faction.
-	 */
-	private HashSet<Unit> unitSet;
 	
 	
 	/**
@@ -148,6 +106,32 @@ public class Faction {
 			throw new NullPointerException();
 		return this.getUnitSet().contains(unit);
 	}
+	
+	/**
+	 * Check whether this faction has a proper unit set.
+	 * @return	True if and only if this faction can have each unit in its unit set as one of its units.
+	 */
+	public boolean hasProperUnits() {
+		for(Unit unit : this.unitSet) {
+			if(! this.canHaveAsUnit(unit))
+				return false;
+		}
+		return true;
+	}
+	
+	/**
+	 * Check whether this faction can have the given unit as one of its units.
+	 * @param unit	The given unit.
+	 * @return	True if and only if the given unit is effective and belongs to this faction.
+	 */
+	public boolean canHaveAsUnit(Unit unit) {
+		return (unit != null) && (unit.getFaction().equals(this));
+	}
+	
+	/**
+	 * Variable registering the unit set of this faction.
+	 */
+	private final HashSet<Unit> unitSet = new HashSet<Unit>();
 	
 	/**
 	 * Variable registering the maximum amount of units that can belong to a faction.

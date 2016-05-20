@@ -15,8 +15,8 @@ import hillbillies.model.Task;
  *       | isValidFaction(getFaction())
  * @invar   Each scheduler must have proper tasks.
  *       | hasProperTasks()
- * @invar	Each scheduler must have valid workers.
- * 		 | hasValidWorkers()
+ * @invar	Each scheduler must have proper workers.
+ * 		 | hasProperWorkers()
  * 
  * @author Michaël
  * @version	1.00
