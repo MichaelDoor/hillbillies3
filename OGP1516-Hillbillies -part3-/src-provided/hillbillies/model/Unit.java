@@ -1003,7 +1003,7 @@ public class Unit extends GameObject {
 			this.moveToAdjacent(differenceVector);
 		}
 		catch (IllegalArgumentException exc){
-			
+
 		}
 	}
 	

@@ -41,9 +41,7 @@ public class IfStatement extends MyStatement {
 		return this.elseBody;
 	}
 	
-	private void setElseBody(MyStatement elseBody) throws NullPointerException {
-		if(elseBody == null)
-			throw new NullPointerException();
+	private void setElseBody(MyStatement elseBody) {
 		this.elseBody = elseBody;
 	}
 	
@@ -55,9 +53,12 @@ public class IfStatement extends MyStatement {
 			this.getIfBody().run(unit);
 			this.setSelectedStatement(this.getIfBody());
 		}
-		else {
+		else if(this.getElseBody() != null){
 			this.getElseBody().run(unit);
 			this.setSelectedStatement(this.getElseBody());
+		}
+		else {
+			this.setExecuted(true);
 		}
 	}
 	
@@ -79,6 +80,8 @@ public class IfStatement extends MyStatement {
 	
 	@Override
 	public boolean isExecuted(Unit unit) throws NullPointerException{
+		if(this.getExecuted())
+			return true;
 		this.setExecuted(this.getSelectedStatement().isExecuted(unit));
 		return this.getExecuted();
 	}

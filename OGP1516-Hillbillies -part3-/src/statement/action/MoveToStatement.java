@@ -16,6 +16,9 @@ public class MoveToStatement extends ActionStatement<PositionVector> {
 	public void run(Unit unit) throws NullPointerException, IllegalArgumentException {
 		PositionVector target = (PositionVector) this.getTarget().evaluate(unit);
 		unit.moveTo(target);
+		// invalid position
+		if(! unit.getActivityStatus().equals("move"))
+			throw new IllegalArgumentException();
 		this.setExecutionTarget(target);
 	}
 	

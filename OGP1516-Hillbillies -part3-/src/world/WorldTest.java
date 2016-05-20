@@ -813,6 +813,7 @@ public class WorldTest {
 		assertEquals(true, (! world2.getWorkshopSet().isEmpty()));
 	}
 	
+	// yes indeed, works sometimes, there is a CHANCE a rock is spawned. It is thus a correct test.
 	@Test
 	public void makeValidTerrain_CaveIn() {
 		int nbX = 3;
