@@ -21,12 +21,13 @@ import hillbillies.model.statement.MyStatement;
  * @invar  The executor of each task must be a valid executor for any
  *         task.
  *       | isValidExecutor(getExecutor())
- * @invar  The specific of each task must be a valid specific for any
- *         task.
- *       | isValidSpecificUnit(getSpecificUnit())
+ * @invar  The specific of each task must be a valid specific.
+ *       | this.isValidSpecificUnit(getSpecificUnit())
  * @invar  The scheduler set of each task must be a valid scheduler set for any
  *         task.
  *       | isValidSchedulerSet(getSchedulerSet())
+ * @invar	Each task must have a proper scheduler set.
+ * 		 | hasPorperSchedulerSet()
  *       
  * @author Michaël
  * @version	1.0
@@ -64,7 +65,7 @@ public class Task {
 	 * 			The given activity is not effective.
 	 * 			| activity == null
 	 */
-	public Task(String name, int priority, MyStatement activity) throws NullPointerException{
+	public Task(String name, int priority, @Raw MyStatement activity) throws NullPointerException{
 		this.setName(name);
 		this.setPriority(priority);
 		this.setActivity(activity);
@@ -148,6 +149,7 @@ public class Task {
 	 * @effect	This tasks priority is subtracted by 10.
 	 * 			| this.setPriority(this.getPriority() - 10)
 	 */
+	@Raw
 	public void reducePriority() {
 		int old = this.getPriority();
 		this.setPriority(old - 10);
@@ -353,6 +355,7 @@ public class Task {
 	 * 			| result == (this.getExecutor() == null) && (this.getSpecificUnit() == null) && (this.getSchedulerSet().isEmpty())
 	 * 			| 				&& (this.getActivity() == null)
 	 */
+	@Raw
 	public boolean isTerminated() {
 		return (this.getExecutor() == null) && (this.getSpecificUnit() == null) && (this.getSchedulerSet().isEmpty())
 				&& (this.getActivity() == null);
@@ -457,7 +460,7 @@ public class Task {
 	 * 			This task can't have the given scheduler as it's scheduler.
 	 * 			| (! this.canHaveAsScheduler(scheduler))
 	 */
-	public void addScheduler(Scheduler scheduler) throws IllegalArgumentException {
+	public void addScheduler(@Raw Scheduler scheduler) throws IllegalArgumentException {
 		if(! this.canHaveAsScheduler(scheduler))
 			throw new IllegalArgumentException();
 		this.getSchedulerSet().add(scheduler);

@@ -22,9 +22,6 @@ import hillbillies.util.*;
  *       | isValidCubeMatrix(getCubeMatrix())
  * @invar  Each cube can have its connected to border checker as connected to border checker.
  *       | canHaveAsConnectedToBorder(this.getConnectedToBorder())
- * @invar  The number of units of each world must be a valid number of units for any
- *         world.
- *       | isValidNumberOfUnits(getNumberOfUnits())
  * @invar  The unit set of each world must be a valid unit set for any
  *         world.
  *       | isValidUnitSet(getUnitSet())
@@ -65,7 +62,7 @@ public class World {
 	 * 			this world has.
 	 * 			| this.connectedToBorder = new ConnectedToBorder(this.getNbCubesX(), this.getNbCubesY(), this.getNbCubesZ())
 	 */
-	public World(int[][][] terrainTypes, TerrainChangeListener modelListener)
+	public World(int[][][] terrainTypes, @Raw TerrainChangeListener modelListener)
 			throws NullPointerException {
 		this.setUnitSet(new HashSet<Unit>());
 		this.setMaterialSet(new HashSet<Material>());
@@ -172,7 +169,7 @@ public class World {
 	 *       | result == (cubeMatrix != null) && (cubeMatrix.length == this.getNbCubesX()
 	 *       				&& (cubeMatrix[0].length == this.getNbCubesY() && (cubeMatrix[0][0].length == this.getNbCubesZ()))
 	*/
-	public boolean isValidCubeMatrix(Cube[][][] cubeMatrix) {
+	public boolean isValidCubeMatrix(@Raw Cube[][][] cubeMatrix) {
 		return (cubeMatrix != null) && (cubeMatrix.length == this.getNbCubesX()
 				&& (cubeMatrix[0].length == this.getNbCubesY()) && (cubeMatrix[0][0].length == this.getNbCubesZ()));
 	}
@@ -700,7 +697,7 @@ public class World {
 	 * @throws	NullPointerException
 	 * 			The given unit is not effective.
 	 */
-	public boolean hasAsUnit(Unit unit) throws NullPointerException {
+	public boolean hasAsUnit(@Raw Unit unit) throws NullPointerException {
 		if(unit == null)
 			throw new NullPointerException();
 		return this.getUnitSet().contains(unit);
@@ -927,7 +924,7 @@ public class World {
 	 * @throws NullPointerException
 	 * 			The given material is not effective.
 	 */
-	public boolean hasAsMaterial(Material material) throws NullPointerException{
+	public boolean hasAsMaterial(@Raw Material material) throws NullPointerException{
 		if(material == null)
 			throw new NullPointerException();
 		return this.getMaterialSet().contains(material);
@@ -1073,7 +1070,7 @@ public class World {
 	 * @throws NullPointerException
 	 * 			The given faction is not effective.
 	 */
-	private boolean hasAsFaction(Faction faction) throws NullPointerException {
+	private boolean hasAsFaction(@Raw Faction faction) throws NullPointerException {
 		if(faction == null)
 			throw new NullPointerException();
 		return this.getFactionSet().contains(faction);

@@ -8,26 +8,22 @@ import hillbillies.model.World;
 
 /**
  * A class of game objects, having a position and weight.
- * @invar  The activityStatus of each unit must be a valid activityStatus for any
- *         unit.
- *       | isValidActivityStatus(getActivityStatus())
- * @invar  The current velocity of each unit must be a valid current velocity for any
- *         unit.
+ * @invar  The activityStatus of each game object  must be a valid activityStatus.
+ *       | this.isValidActivityStatus(getActivityStatus())
+ * @invar  The current velocity of each game object must be a valid current velocity for any
+ *         game object.
  *       | isValidCurrentVelocity(getCurrentVelocity())
- * @invar  The targeted adjacent position of each unit must be a valid targeted adjacent position for any
- *         unit.
- *       | isValidNextPosition(getNextPosition())
- * @invar  The unitPosition of each game object must be a valid unitPosition for any
- *         game object.
- *       | isValidUnitPosition(getUnitPosition())
- * @invar  The weight of each unit must be a valid weight for any
- *         unit.
- *       | isValidWeight(getWeight())
- * @invar  The world of each unit must be a valid world for any
- *         game object.
- *       | isValidWorld(getWorld())
+ * @invar  The targeted next position of each game object must be a next targeted adjacent position.
+ *       | this.isValidNextPosition(getNextPosition())
+ * @invar  The unitPosition of each game object must be a valid unitPosition.
+ *       | this.isValidUnitPosition(getUnitPosition())
+ * @invar  The weight of this game object must be a valid weight.
+ *       | this.isValidWeight(getWeight())
+ * @invar  The world of each game object must be a valid world.
+ *       | this.isValidWorld(getWorld())
  * 
  * @author Michaël
+ * @version	3.00
  *
  */
 public abstract class GameObject {
@@ -44,6 +40,8 @@ public abstract class GameObject {
 	 *       	| this.setCurrentVelocity(new PositionVector(0,0,0))
 	 * @throws	IllegalArgumentException
 	 * 			The given position is not a valid position.
+	 * @throws	IllegalArgumentException
+	 * 			The given weight is not a valid weight for this new game object.
 	 * @throws	NullPointerException
 	 * 			The given position is not effective.
 	 */
@@ -148,11 +146,26 @@ public abstract class GameObject {
 	/**
 	 * Set the weight of this game object to the given weight.
 	 * @param weight	The given weight.
-	 * @post	This game object's weight equals the given weight.
+	 * @post	This game object's weight equals the given weight if it is a valid weight for this game object.
 	 */
+	@Raw @Model
+	protected void setWeight(int weight) throws IllegalArgumentException {
+		if(this.isValidWeight(weight))
+			this.weight = weight;
+	}
+	
+	/**
+	 * Check whether the given weight is a valid weight for
+	 * this game object.
+	 *  
+	 * @param  weight
+	 *         The weight to check.
+	 * @return The given weight is greater than or equal to 0
+	 *       | result == weight >= 0
+	*/
 	@Raw
-	protected void setWeight(int weight) {
-		this.weight = weight;
+	protected boolean isValidWeight(int weight) {
+		return weight >= 0;
 	}
 	
 	/**
@@ -205,7 +218,7 @@ public abstract class GameObject {
 	 *         game object.
 	 *       | ! isValidWorld(getWorld())
 	 */
-	@Raw
+	@Raw @Model
 	private void setWorld(World world) 
 			throws NullPointerException, IllegalArgumentException {
 		try{
@@ -229,6 +242,7 @@ public abstract class GameObject {
 	 * @effect	This game object's world is set to the given world.
 	 * 			|	this.setWorld(world)
 	 */
+	@Raw
 	public void changeWorld(World world){
 		this.setWorld(world);
 	}
@@ -257,7 +271,8 @@ public abstract class GameObject {
 	 *  
 	 * @param  targeted adjacent position
 	 *         The targeted adjacent position to check.
-	 * @return 
+	 * @return True if and only if the given next position is equal to this game object's current position or is a valid adjacent position
+	 * 			of this game object.
 	 *       | result == (this.isValidAdjacent(nextPosition)) ||  (this.getUnitPosition().equals(nextPosition))
 	*/
 	protected boolean isValidNextPosition(PositionVector nextPosition) {
@@ -341,6 +356,7 @@ public abstract class GameObject {
 	 * 			| this.setActivityStatus("fall")
 	 * 			| this.setNextPosition(PositionVector.centrePosition(this.getWorld().getPositionUnderneath(this.getCubePosition())))
 	 */
+	@Raw
 	protected void fall() {
 		this.setActivityStatus("fall");
 		this.setCurrentVelocity(fallVelocity);
@@ -407,6 +423,7 @@ public abstract class GameObject {
 	 * @throws IllegalStateException
 	 * 			This game object is already terminated.
 	 */
+	@Raw
 	protected void terminate() throws IllegalStateException {
 		if(this.isTerminated())
 			throw new IllegalStateException("Game object already terminated!");
@@ -419,6 +436,7 @@ public abstract class GameObject {
 	 * Check whether this game object is terminated.
 	 * @return	True if and only if this game object's next position and world are null and it's velocity zero.
 	 */
+	@Raw
 	public boolean isTerminated() {
 		PositionVector velocity = this.getCurrentVelocityBasic();
 		return ((velocity.equals(new PositionVector(0,0,0))) && (this.getNextPosition() == null)

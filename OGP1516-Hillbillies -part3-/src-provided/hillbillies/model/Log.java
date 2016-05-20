@@ -6,7 +6,7 @@ import hillbillies.model.PositionVector;
 /**
  * A class of logs, having a position and weight.
  * @author Michaël
- *
+ * @version	1.00
  */
 public class Log extends Material {
 	

@@ -15,6 +15,8 @@ import hillbillies.model.Task;
  *       | isValidFaction(getFaction())
  * @invar   Each scheduler must have proper tasks.
  *       | hasProperTasks()
+ * @invar	Each scheduler must have valid workers.
+ * 		 | hasValidWorkers()
  * 
  * @author Michaël
  * @version	1.00
@@ -464,7 +466,7 @@ public class Scheduler {
 	 * 			as one of its tasks.
 	 * 			| (! this.getFaction().hasAsUnit(unit)) || (! this.hasAsTask(task))
 	 */
-	public void assignSpecificUnit(Unit unit, Task task) throws NullPointerException, IllegalArgumentException {
+	public void assignSpecificUnit(@Raw Unit unit, @Raw Task task) throws NullPointerException, IllegalArgumentException {
 		if((unit == null) || (task == null))
 			throw new NullPointerException();
 		if((! this.getFaction().hasAsUnit(unit)) || (! this.hasAsTask(task)))
@@ -484,7 +486,8 @@ public class Scheduler {
 	 * 			This scheduler does not have the given task as one of its tasks.
 	 * 			| ! this.hasAsTask(task)
 	 */
-	public void resetSpecificUnit(Task task) throws NullPointerException, IllegalArgumentException {
+	@Raw
+	public void resetSpecificUnit(@Raw Task task) throws NullPointerException, IllegalArgumentException {
 		if(task == null)
 			throw new NullPointerException();
 		if(! this.hasAsTask(task))
@@ -595,7 +598,7 @@ public class Scheduler {
 	 * 			The given unit is not effective.
 	 * 			| unit == null
 	 */
-	public boolean hasAsWorker(Unit unit) throws NullPointerException {
+	public boolean hasAsWorker(@Raw Unit unit) throws NullPointerException {
 		if(unit == null)
 			throw new NullPointerException();
 		return workers.containsKey(unit);
@@ -645,7 +648,7 @@ public class Scheduler {
 	 * 			This scheduler does not have any available work.
 	 * 			| (! this.hasWork(unit))
 	 */
-	public void giveWork(Unit unit) throws NullPointerException, IllegalArgumentException, IllegalStateException {
+	public void giveWork(@Raw Unit unit) throws NullPointerException, IllegalArgumentException, IllegalStateException {
 		if(this.hasAsWorker(unit)){
 			this.workers.get(unit).execute();
 		}

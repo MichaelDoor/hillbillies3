@@ -22,42 +22,35 @@ import hillbillies.model.Faction;
  * @invar  The toughness of each unit must be a valid toughness for any
  *         unit.
  *       | isValidToughness(getToughness())
- * @invar  The maxHP of each unit must be a valid maxHP for any
- *         unit.
- *       | isValidMaxHP(getMaxHP())
- * @invar  The maxStamina of each unit must be a valid maxStamina for any
- *         unit.
- *       | isValidMaxStamina(getMaxStamina())
- * @invar  The currentHP of each unit must be a valid currentHP for any
- *         unit.
- *       | isValidCurrentHP(getCurrentHP())
- * @invar  The currentStamina of each unit must be a valid currentStamina for any
- *         unit.
- *       | isValidCurrentStamina(getCurrentStamina())
+ * @invar  The weight of each unit must be a valid weight.
+ *       | this.isValidWeight(getWeight())
+ * @invar  The maxHP of each unit must be a valid maxHP.
+ *       | this.isValidMaxHP(getMaxHP())
+ * @invar  The maxStamina of each unit must be a valid maxStamina.
+ *       | this.isValidMaxStamina(getMaxStamina())
+ * @invar  The currentHP of each unit must be a valid currentHP.
+ *       | this.isValidCurrentHP(getCurrentHP())
+ * @invar  The currentStamina of each unit must be a valid currentStamina.
+ *       | this.isValidCurrentStamina(getCurrentStamina())
  * @invar  The orientation of each unit must be a valid orientation for any
  *         unit.
  *       | isValidOrientation(getOrientation())
  * @invar  The movementstatus of each unit must be a valid movementstatus for any
  *         unit.
  *       | isValidMovementStatus(getMovementStatus())
- * @invar  The destination of each unit must be a valid destination for any
- *         unit.
- *       | isValidDestination(getDestination())
- * @invar  The decimal stamina of each unit must be a valid decimal stamina for any
- *         unit.
- *       | isValidDoubleStamina(getDoubleStamina())
- * @invar  The work time of each unit must be a valid work time for any
- *         unit.
- *       | isValidWorkTime(getWorkTime())
+ * @invar  The destination of each unit must be a valid destination.
+ *       | this.isValidDestination(getDestination())
+ * @invar  The decimal stamina of each unit must be a valid decimal stamina.
+ *       | this.isValidDoubleStamina(getDoubleStamina())
+ * @invar  The work time of each unit must be a valid work time.
+ *       | this.isValidWorkTime(getWorkTime())
  * @invar  The attack time of each unit must be a valid attack time for any
  *         unit.
  *       | isValidAttackTime(getAttackTime())
- * @invar  The double type hitpoints of each unit must be a valid double type hitpoints for any
- *         unit.
- *       | isValidDoubleHP(getDoubleHP())
- * @invar  The minimum rest counter of each unit must be a valid minimum rest counter for any
- *         unit.
- *       | isValidMinRestCounter(getMinRestCounter())
+ * @invar  The double type hitpoints of each unit must be a valid double type hitpoints.
+ *       | this.isValidDoubleHP(getDoubleHP())
+ * @invar  The minimum rest counter of each unit must be a valid minimum rest counter.
+ *       | this.isValidMinRestCounter(getMinRestCounter())
  * @invar  The automatic rest counter of each unit must be a valid automatic rest counter for any
  *         unit.
  *       | isValidAutRestCounter(getAutRestCounter())
@@ -73,23 +66,24 @@ import hillbillies.model.Faction;
  * @invar  The inventory of each unit must be a valid inventory for any
  *         unit.
  *       | isValidInventory(getInventory())
- * @invar  The work position of each unit must be a valid work position for any
- *         unit.
- *       | isValidWorkPosition(getWorkPosition())
+ * @invar  The work position of each unit must be a valid work position.
+ *       | this.isValidWorkPosition(getWorkPosition())
  * @invar  The defend attempts map of each unit must be a valid defend attempts map for any
  *         unit.
  *       | isValidDefendAttempts(getDefendAttempts())
- * @invar  The target of each unit must be a valid target for any
- *         unit.
- *       | isValidTarget(getTarget())
+ * @invar  The target of each unit must be a valid target.
+ *       | this.isValidTarget(getTarget())
  * @invar  The scheduler delay of each unit must be a valid scheduler delay for any
  *         unit.
  *       | isValidSchedulerDelay(getSchedulerDelay())
- * @invar  The assigned task of each unit must be a valid assigned task for this
- *         unit.
- *       | isValidTask(getTask())
+ * @invar  The assigned task of each unit must be a valid assigned task.
+ *       | this.isValidTask(getTask())
+ * @invar  The activityStatus of each unit must be a valid activityStatus.
+ *       | this.isValidActivityStatus(getActivityStatus())
+ * @invar  The world of each game object must be a valid world.
+ *       | this.isValidWorld(getWorld())
  * @author Michaël Dooreman
- * @version	2.5
+ * @version	3.0
  */
 public class Unit extends GameObject {
 	
@@ -414,10 +408,12 @@ public class Unit extends GameObject {
 	 *  
 	 * @param  weight
 	 *         The weight to check.
-	 * @return 
+	 * @return True if and only if the given weight is greater than or equal to 1 and smaller than or equal to 200 and greater than
+	 * 			or equal to the given formula for the weight under boundary.
 	 *       | result == ((weight >= 1) && (weight <= 200) && (weight >= ((this.getStrength()+this.getAgility())/2)))
+	 * @note Greater than or equal to 1 is there in cases of use as raw.
 	*/
-	@Raw
+	@Override @Raw
 	protected boolean isValidWeight(int weight) {
 		int strength = this.getStrength();
 		int agility = this.getAgility();
@@ -1172,7 +1168,7 @@ public class Unit extends GameObject {
 	 *		 |					(activityStatus.equals("rest")) || (activityStatus.equals("attack")) ||
 	 *		 |						 (activityStatus.equals("default")) || (activityStatus.equals("fall"))))
 	 */
-	@Override
+	@Override @Raw
 	protected boolean isValidActivityStatus(String activityStatus) {
 		return ((activityStatus.equals("move") || (activityStatus.equals("work")) || 
 					(activityStatus.equals("rest")) || (activityStatus.equals("attack")) ||
@@ -1221,6 +1217,7 @@ public class Unit extends GameObject {
 	 * 			The destination is not effective.
 	 * 			| destination == null
 	*/
+	@Raw
 	private boolean isValidDestination(PositionVector destination) throws NullPointerException{
 		if(this.getWorld() == null)
 			return true;
@@ -1609,7 +1606,6 @@ public class Unit extends GameObject {
 	 * 			This unit is attacking or falling.
 	 * 			| this.getActivityStaus().equals("attack") || (this.getActivityStatus().equals("fall"))
 	 */
-	@Raw
 	public void work(PositionVector targetPosition) throws IllegalArgumentException, IllegalStateException {
 		try{
 			if(! this.isValidAdjacent(targetPosition))
@@ -1731,12 +1727,12 @@ public class Unit extends GameObject {
 	 * 			| this.setWeight(this.getWeight() + 5)
 	 * 			| this.setToughness(this.getToughness() + 10)
 	 * @throws	IllegalStateException
-	 * 			This unit's work position does not refer to a workshop and does not contain a log and a boulder.
+	 * 			This unit's world is not effective or its work position does not refer to a workshop and does not contain a log and a boulder.
 	 * 			(!this.getWorld().isWorkshop(this.getWorkPosition())) || (! this.getWorld().containsBoulder(this.getWorkPosition()))
 	 *			| 	|| (this.getWorld().containsLog(this.getWorkPosition()))
 	 */
 	private void improveEquipment() throws IllegalStateException{
-		if((!this.getWorld().isWorkshop(this.getWorkPosition())) || (! this.getWorld().containsBoulder(this.getWorkPosition()))
+		if((this.getWorld() == null) || (!this.getWorld().isWorkshop(this.getWorkPosition())) || (! this.getWorld().containsBoulder(this.getWorkPosition()))
 				|| (! this.getWorld().containsLog(this.getWorkPosition())))
 			throw new IllegalStateException();
 		Boulder boulder = this.getWorld().getABoulder(this.getWorkPosition());
@@ -2807,7 +2803,7 @@ public class Unit extends GameObject {
 	 * @return The given world is effective and can have this unit as one of its units.
 	 *       | result == (world == null) || (world.canHaveAsUnit(this)
 	*/
-	@Override
+	@Override @Raw
 	protected boolean isValidWorld(World world) {
 		return ((world == null) || (world.canHaveAsUnit(this)));
 	}
@@ -2905,6 +2901,7 @@ public class Unit extends GameObject {
 	 * 			| && (this.faction == null) && (this.name == null) && (super.isTerminated())
 	 * 			| && (this.getDoubleHP == 0.0) && (this.getDoubleStamina == 0.0)
 	 */
+	@Raw
 	public boolean isTerminated(){
 		boolean flag1 = ((this.world == null) && (this.activityStatus == null));
 		boolean flag2 = ((this.destination == null) && (this.faction == null));
@@ -3235,11 +3232,13 @@ public class Unit extends GameObject {
 	/**
 	 * Check whether this unit can have a given attacker in a defend attempt.
 	 * @param attacker	The given attacking unit.
-	 * @return	True if and only if the given attacker is effective and a unit of this unit's world or this unit is terminated.
-	 * 			| result == (((attacker != null) && ((this.isTerminated()) || (this.getWorld().hasAsUnit(attacker)))) )
+	 * @return	True if and only if this unit's world is effective and the given attacker is effective and a unit of this unit's world 
+	 * 			or this unit is terminated.
+	 * 			| result == (this.getWorld() != null) ||(((attacker != null) && ((this.isTerminated()) || (this.getWorld().hasAsUnit(attacker)))) )
 	 */
+	@Raw
 	public boolean canHaveAsDefendAttempt(Unit attacker){
-		return (((attacker != null) && ((this.isTerminated()) || (this.getWorld().hasAsUnit(attacker)))) );
+		return (this.getWorld() != null) && (((attacker != null) && ((this.isTerminated()) || (this.getWorld().hasAsUnit(attacker)))) );
 	}
 	
 	/**
@@ -3290,9 +3289,10 @@ public class Unit extends GameObject {
 	 * @param  target
 	 *         The target to check.
 	 * @return True if and only if the given target belongs to this unit's world or is not effective.
-	 *       | result == (target == null) || (this.getWorld().hasAsUnit(target))
+	 *       | result == (this.getWorld().hasAsUnit(target))
 	*/
-	public boolean isValidTarget(Unit target) {
+	@Raw
+	public boolean isValidTarget(@Raw Unit target) {
 		return ((target == null) || (this.getWorld().hasAsUnit(target)));
 	}
 	
@@ -3444,6 +3444,7 @@ public class Unit extends GameObject {
 	 * @return	True, if and only if this unit's activity status equals default and it's current position does not differ from
 	 * 			it's next position, nor it's destination.
 	 */
+	@Raw
 	public boolean isIdle() {
 		return ((this.getActivityStatus().equals("default")) && (this.getUnitPosition().equals(this.getNextPosition())) 
 				&& this.getUnitPosition().equals(this.getDestination()));
@@ -3496,6 +3497,7 @@ public class Unit extends GameObject {
 	 * @effect	This unit's scheduler delay is set to the random work cool down time of any unit.
 	 * 			| this.setSchedulerDelay(randomWorkCoolDownTime)
 	 */
+	@Raw
 	public void resetSchedulerDelay() {
 		this.setSchedulerDelay(randomWorkCoolDownTime);
 	}
@@ -3512,6 +3514,7 @@ public class Unit extends GameObject {
 	 * 			The given amount of time is negative.
 	 * 			| time < 0
 	 */
+	@Raw
 	private void decreaseSchedulerDelay(double time) throws IllegalArgumentException {
 		if(time < 0)
 			throw new IllegalArgumentException();
@@ -3531,6 +3534,7 @@ public class Unit extends GameObject {
 	 * 			The given amount of time is negative.
 	 * 			| time < 0
 	 */
+	@Raw
 	private void schedulerDelayCheck(double time) throws IllegalArgumentException {
 		if(this.getDefaultBehaviour())
 			this.decreaseSchedulerDelay(time);
@@ -3565,7 +3569,8 @@ public class Unit extends GameObject {
 	 *       | result == (task == null) || (task.getExecutor() == null) 
 	 *       |				&& ((task.getSpecificUnit() == null) || (task.getSpecificUnit().equals(this)))
 	*/
-	public boolean isValidTask(Task task) {
+	@Raw
+	public boolean isValidTask(@Raw Task task) {
 		return  (task == null) || ((task.getExecutor() == null) 
 				&& ((task.getSpecificUnit() == null) || (task.getSpecificUnit().equals(this))));
 	}

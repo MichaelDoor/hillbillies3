@@ -5,7 +5,7 @@ import position.PositionVector;
 /**
  * A class of boulders, having a position and weight.
  * @author Michaël
- *
+ * @version	1.00
  */
 public class Boulder extends Material {
 	

@@ -8,8 +8,10 @@ import hillbillies.model.PositionVector;
 
 /**
  * A class of materials, having a position and weight.
+ * @invar  The weight of this material must be a valid weight.
+ *       | this.isValidWeight(getWeight())
  * @author Michaël
- *
+ * @version	2.00
  */
 public abstract class Material extends GameObject {
 
@@ -34,6 +36,20 @@ public abstract class Material extends GameObject {
 	private void setWeight() {
 		Random generator = new Random();
 		super.setWeight(generator.nextInt(41)+10);
+	}
+	
+	/**
+	 * Check whether the given weight is a valid weight for
+	 * this material.
+	 *  
+	 * @param  weight
+	 *         The weight to check.
+	 * @return The given weight is greater than or equal to 0 and smaller than or equal to 50.
+	 *       | result == (weight >= 0) && (weight <= 50)
+	*/
+	@Override @Raw
+	protected boolean isValidWeight(int weight) {
+		return (weight >= 0) && (weight <= 50);
 	}
 	
 	/**
