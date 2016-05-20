@@ -201,7 +201,7 @@ public class World {
 				while (z < this.getNbCubesZ()) {
 					cubeMatrix[x][y][z] = this.mapCube(new PositionVector(x,y,z), terrainMatrix[x][y][z]);
 					if(terrainMatrix[x][y][z] == 3)
-						this.getWorkshopSet().add(new PositionVector(x,y,z));
+						this.workshopSet.add(new PositionVector(x,y,z));
 					z++;
 				}
 				y++;
@@ -524,7 +524,7 @@ public class World {
 		this.getTerrainMatrix()[x][y][z] = newCube.getTerrainType();
 		this.modelListener.notifyTerrainChanged(x, y, z);
 		if(newCube.getTerrainType() == 3)
-			this.getWorkshopSet().add(new PositionVector(x,y,z));
+			this.workshopSet.add(new PositionVector(x,y,z));
 	}
 	
 	/**
@@ -618,7 +618,7 @@ public class World {
 			if(! this.hasAsFaction(unit.getFaction()))
 				this.addFaction(unit.getFaction());
 			unit.changeWorld(this);
-			this.getUnitSet().add(unit);
+			this.unitSet.add(unit);
 			int[] cubePosition = unit.getCubePosition();
 			this.getCube(cubePosition[0], cubePosition[1], cubePosition[2]).addAsContent(unit);
 		}
@@ -646,7 +646,7 @@ public class World {
 		if(! this.hasAsUnit(unit))
 			throw new IllegalArgumentException("This world does not have the given unit as one of its units");
 		PositionVector unitCubePosition = unit.getCubePositionVector();
-		this.getUnitSet().remove(unit);
+		this.unitSet.remove(unit);
 		this.getCube((int) unitCubePosition.getXArgument(), (int) unitCubePosition.getYArgument(),
 				(int) unitCubePosition.getZArgument()).removeAsContent(unit);
 		unit.changeWorld(null);
@@ -662,7 +662,7 @@ public class World {
 	public boolean hasAsUnit(@Raw Unit unit) throws NullPointerException {
 		if(unit == null)
 			throw new NullPointerException();
-		return this.getUnitSet().contains(unit);
+		return this.unitSet.contains(unit);
 	}
 	
 	/**
@@ -680,8 +680,8 @@ public class World {
 			throw new NullPointerException();
 		boolean flag1 = (this.isValidPosition(unit.getUnitPosition()));
 		boolean flag2 = (! this.hasAsUnit(unit));
-		boolean flag3 = (this.getUnitSet().size() < maxNumberOfUnits);
-		boolean flag4 = (!((this.getFactionSet().size() > maxNbOfActiveFactions - 1) && (! this.hasAsFaction(unit.getFaction()))));
+		boolean flag3 = (this.unitSet.size() < maxNumberOfUnits);
+		boolean flag4 = (!((this.factionSet.size() > maxNbOfActiveFactions - 1) && (! this.hasAsFaction(unit.getFaction()))));
 		boolean flag5 = (! this.getCube(unit.getCubePosition()[0],unit.getCubePosition()[1],unit.getCubePosition()[2]).isSolid());
 		return (flag1 && flag2 && flag3 && flag4 && flag5);
 	}
@@ -857,7 +857,7 @@ public class World {
 	 * 			changed to this world.
 	 */
 	public void addMaterial(Material material){
-		this.getMaterialSet().add(material);
+		this.materialSet.add(material);
 		this.getCube(material.getCubePosition()[0], material.getCubePosition()[1], 
 				material.getCubePosition()[2]).addAsContent(material);
 		material.changeWorld(this);
@@ -877,7 +877,7 @@ public class World {
 			throw new NullPointerException();
 		if(! this.hasAsMaterial(material))
 			throw new IllegalArgumentException();
-		this.getMaterialSet().remove(material);
+		this.materialSet.remove(material);
 		this.getCube(material.getCubePosition()[0], material.getCubePosition()[1], 
 				material.getCubePosition()[2]).removeAsContent(material);
 	}
@@ -892,7 +892,7 @@ public class World {
 	public boolean hasAsMaterial(@Raw Material material) throws NullPointerException{
 		if(material == null)
 			throw new NullPointerException();
-		return this.getMaterialSet().contains(material);
+		return this.materialSet.contains(material);
 	}
 	
 	/**
@@ -939,9 +939,9 @@ public class World {
 			double t = time;
 			if(Util.fuzzyGreaterThanOrEqualTo(t, 0.2))
 				t = 0.19;
-			for(Unit unit : this.getUnitSet())
+			for(Unit unit : this.unitSet)
 				unit.advanceTime(t);
-			for(Material material : this.getMaterialSet())
+			for(Material material : this.materialSet)
 				material.advanceTime(t);
 			this.cleanCollections();
 			time = time - t;
@@ -966,7 +966,7 @@ public class World {
 	public void addFaction(Faction faction) throws  IllegalStateException, NullPointerException{
 		try{if(! this.canHaveAsFaction(faction))
 				throw new IllegalStateException();
-			this.getFactionSet().add(faction);
+			this.factionSet.add(faction);
 		}
 		catch (IllegalStateException exc) {
 			
@@ -987,7 +987,7 @@ public class World {
 			throw new NullPointerException();
 		if(! this.hasAsFaction(faction))
 			throw new IllegalArgumentException("Faction does not exist!");
-		this.getFactionSet().remove(faction);
+		this.factionSet.remove(faction);
 	}
 	
 	/**
@@ -999,8 +999,8 @@ public class World {
 	 */
 	private boolean canHaveAsFaction(Faction faction){
 		boolean flag1 = (faction != null);
-		boolean flag2 = (! this.getFactionSet().contains(faction));
-		boolean flag3 = ((this.getFactionSet().size()) < maxNbOfActiveFactions) || (((this.getFactionSet().size()) == maxNbOfActiveFactions)
+		boolean flag2 = (! this.factionSet.contains(faction));
+		boolean flag3 = ((this.factionSet.size()) < maxNbOfActiveFactions) || (((this.factionSet.size()) == maxNbOfActiveFactions)
 				&& (faction.getUnitSet().isEmpty()));
 		return (flag1 && flag2 && flag3);
 	}
@@ -1015,7 +1015,7 @@ public class World {
 	private boolean hasAsFaction(@Raw Faction faction) throws NullPointerException {
 		if(faction == null)
 			throw new NullPointerException();
-		return this.getFactionSet().contains(faction);
+		return this.factionSet.contains(faction);
 	}
 	
 	/**
@@ -1024,7 +1024,7 @@ public class World {
 	 */
 	public Set<Faction> getActiveFactions() {
 		Set<Faction> result = new HashSet<Faction>();
-		for(Faction faction : this.getFactionSet()){
+		for(Faction faction : this.factionSet){
 			if(! faction.getUnitSet().isEmpty())
 				result.add(faction);
 		}
@@ -1065,7 +1065,7 @@ public class World {
 		else{
 			Faction smallestFaction = null;
 			int smallestNbOfunits = Faction.getMaxNbOfUnits();
-			for(Faction faction : this.getFactionSet()){
+			for(Faction faction : this.factionSet){
 				int factionSize = faction.getUnitSet().size();
 				if(factionSize < smallestNbOfunits)
 					smallestFaction = faction;
@@ -1381,7 +1381,7 @@ public class World {
 	 */
 	public Set<Boulder> getBoulders() {
 		Set<Boulder> result = new HashSet<Boulder>();
-		for(Material material : this.getMaterialSet()){
+		for(Material material : this.materialSet){
 			if(material.getClass().equals(Boulder.class))
 				result.add((Boulder) material);
 		}
@@ -1394,7 +1394,7 @@ public class World {
 	 */
 	public Set<Log> getLogs() {
 		Set<Log> result = new HashSet<Log>();
-		for(Material material : this.getMaterialSet()){
+		for(Material material : this.materialSet){
 			if(material.getClass().equals(Log.class))
 				result.add((Log) material);
 		}
@@ -1631,10 +1631,10 @@ public class World {
 	 */
 	private void cleanCollections() {
 		Set<Unit> unitSet = new HashSet<>();
-		for(Unit unit : this.getUnitSet())
+		for(Unit unit : this.unitSet)
 			unitSet.add(unit);
 		Set<Material> materialSet = new HashSet<>();
-		for(Material material : this.getMaterialSet())
+		for(Material material : this.materialSet)
 			materialSet.add(material);
 		for(Unit unit : unitSet){
 			if(! this.isValidWorldUnit(unit))
@@ -1698,7 +1698,7 @@ public class World {
 		// since isAccessible throws exception when positions are the same
 		if(this.cubeHasBoulder(position))
 			return this.getABoulder(position).getCubePositionVector();
-		for(Material material : this.getMaterialSet()){
+		for(Material material : this.materialSet){
 			if(material.getClass().equals(Boulder.class)){
 				if(this.isAccessible(material.getCubePositionVector(), position))
 					return material.getCubePositionVector();
@@ -1721,7 +1721,7 @@ public class World {
 		// since isAccessible throws exception when positions are the same
 		if(this.cubeHasLog(position))
 			return this.getALog(position).getCubePositionVector();
-		for(Material material : this.getMaterialSet()){
+		for(Material material : this.materialSet){
 			if(material.getClass().equals(Log.class)){
 				if(this.isAccessible(material.getCubePositionVector(), position))
 					return material.getCubePositionVector();
@@ -1741,7 +1741,7 @@ public class World {
 	 * 			The given position is not a valid position for this world.
 	 */
 	public PositionVector getAccesibleWorkshop(PositionVector position) throws NullPointerException, IllegalArgumentException{
-		for(PositionVector workshop : this.getWorkshopSet()){
+		for(PositionVector workshop : this.workshopSet){
 			if(this.isAccessible(workshop, position))
 				return workshop;
 		}
@@ -1847,10 +1847,10 @@ public class World {
 	 * 			The given unit does not belong to this world.
 	 */
 	public Unit getAccessibleAlly(Unit unit) throws NullPointerException, IllegalArgumentException{
-		if(! this.getUnitSet().contains(unit))
+		if(! this.unitSet.contains(unit))
 			throw new IllegalArgumentException();
 		Faction faction = unit.getFaction();
-		for(Unit ally : this.getUnitSet()){
+		for(Unit ally : this.unitSet){
 			if((! ally.equals(unit)) && (ally.getFaction().equals(faction)) 
 					&& (this.isAccessible(ally.getCubePositionVector(), unit.getCubePositionVector())))
 				return ally;
@@ -1869,10 +1869,10 @@ public class World {
 	 * 			The given unit does not belong to this world.
 	 */
 	public Unit getAccessibleEnemy(Unit unit) throws NullPointerException, IllegalArgumentException{
-		if(! this.getUnitSet().contains(unit))
+		if(! this.unitSet.contains(unit))
 			throw new IllegalArgumentException();
 		Faction faction = unit.getFaction();
-		for(Unit enemy : this.getUnitSet()){
+		for(Unit enemy : this.unitSet){
 			if((! enemy.getFaction().equals(faction)) 
 					&& (this.isAccessible(enemy.getCubePositionVector(), unit.getCubePositionVector())))
 				return enemy;
@@ -1891,9 +1891,9 @@ public class World {
 	 * 			The given unit does not belong to this world.
 	 */
 	public Unit getAccessibleUnit(Unit unit) throws NullPointerException, IllegalArgumentException{
-		if(! this.getUnitSet().contains(unit))
+		if(! this.unitSet.contains(unit))
 			throw new IllegalArgumentException();
-		for(Unit resultUnit : this.getUnitSet()){
+		for(Unit resultUnit : this.unitSet){
 			if((! resultUnit.equals(unit)) 
 					&& (this.isAccessible(resultUnit.getCubePositionVector(), unit.getCubePositionVector())))
 				return resultUnit;

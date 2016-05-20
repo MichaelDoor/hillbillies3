@@ -1700,14 +1700,14 @@ public class Unit extends GameObject {
 		if((this.getWorkTime() != 0) || (! this.getActivityStatus().equals("work")))
 			throw new IllegalStateException();
 		
-		if((! this.getWorld().isSolidPosition(this.getWorkPosition())) && (! this.getInventory().isEmpty()))
+		if((! this.getWorld().isSolidPosition(this.getWorkPosition())) && (! this.inventory.isEmpty()))
 			this.emptyInventory(this.getWorkPosition());
 		else if((this.getWorld().isWorkshop(this.getWorkPosition())) && (this.getWorld().containsLog(this.getWorkPosition()))
 				&& (this.getWorld().containsBoulder(this.getWorkPosition())))
 			this.improveEquipment();
-		else if((this.getWorld().containsBoulder(this.getWorkPosition())) && (this.getInventory().size() < inventoryCapacity))
+		else if((this.getWorld().containsBoulder(this.getWorkPosition())) && (this.inventory.size() < inventoryCapacity))
 			this.pickUpMaterial(this.getWorld().getABoulder(this.getWorkPosition()));
-		else if((this.getWorld().containsLog(this.getWorkPosition())) && (this.getInventory().size() < inventoryCapacity))
+		else if((this.getWorld().containsLog(this.getWorkPosition())) && (this.inventory.size() < inventoryCapacity))
 			this.pickUpMaterial(this.getWorld().getALog(this.getWorkPosition()));
 		else if((this.getWorld().isWood(this.getWorkPosition())) || (this.getWorld().isRock(this.getWorkPosition())))
 			this.getWorld().collapse(this.getWorkPosition());
@@ -1764,7 +1764,7 @@ public class Unit extends GameObject {
 				|| (! this.getWorld().hasAsMaterial(material))
 					|| (! material.getCubePositionVector().equals(new PositionVector((int)this.getWorkPosition().getXArgument(), 
 						(int)this.getWorkPosition().getYArgument(), (int)this.getWorkPosition().getZArgument())))
-						|| (this.getInventory().size() == inventoryCapacity))
+						|| (this.inventory.size() == inventoryCapacity))
 			throw new IllegalArgumentException("Pick up material exception");
 		this.addMaterialToInventory(material);	
 	}
@@ -2986,14 +2986,14 @@ public class Unit extends GameObject {
 	 * Add a given material to this unit's inventory.
 	 * @param material	The given material.
 	 * @effect	The given material is added to this unit's inventory and removed from this unit's world.
-	 * 			| this.getInventory().add(material)
+	 * 			| this.inventory.add(material)
 	 * 			| this.getWorld().removeMaterial(material)
 	 * @throws IllegalArgumentException
 	 */
 	public void addMaterialToInventory(Material material) throws IllegalArgumentException{
 		if(! this.canHaveAsMaterial(material))
 			throw new IllegalArgumentException("AddMaterialToInventory exception");
-		this.getInventory().add(material);
+		this.inventory.add(material);
 		this.getWorld().removeMaterial(material);
 	}
 	
@@ -3005,7 +3005,7 @@ public class Unit extends GameObject {
 	 * 			| result == (! material == null) && (material.getWorld().equals(this.getWorld()))
 	 * 			| 			&& (this.isValidAdjacent(PositionVector.calcDifferenceVector(this.getCubePositionVector(), 
 	 * 			| 																		material.getCubePositionVector())))
-	 * 			| 				&& (this.getInventory().size() < inventoryCapacity)
+	 * 			| 				&& (this.inventory.size() < inventoryCapacity)
 	 */
 	public boolean canHaveAsMaterial(Material material){
 		if(material == null)
@@ -3014,7 +3014,7 @@ public class Unit extends GameObject {
 			return false;
 		if(! this.isValidAdjacent(material.getCubePositionVector()))
 			return false;
-		if(this.getInventory().size() == inventoryCapacity)
+		if(this.inventory.size() == inventoryCapacity)
 			return false;
 		return true;			
 	}
@@ -3023,7 +3023,7 @@ public class Unit extends GameObject {
 	 * Remove a given material from this unit's inventory.
 	 * @param material	The given material.
 	 * @effect	The given material is removed from his unit's inventory.
-	 * 			| this.getInventory().remove(material)
+	 * 			| this.inventory.remove(material)
 	 * @throws IllegalArgumentException
 	 * 			The given material is not in this unit's inventory.
 	 * 			| ! this.inInventory(material)
@@ -3032,19 +3032,19 @@ public class Unit extends GameObject {
 	private void removeMaterial(Material material) throws IllegalArgumentException {
 		if(! this.inInventory(material))
 			throw new IllegalArgumentException("The given material is not in this unit's inventory");
-		this.getInventory().remove(material);
+		this.inventory.remove(material);
 	}
 	
 	/**
 	 * Empty this unit's inventory at the given position.
 	 * @param	position	The given position.
 	 * @effect	All materials are removed from this unit's inventory and are given the given position as their position.
-	 * 			| for(Material material : this.getInventory())
+	 * 			| for(Material material : this.inventory)
 	 * 			| 	material.setUnitPosition(position)
 	 * 			| 	this.removeMaterial(material)
 	 */
 	public void emptyInventory(PositionVector position){
-		for(Material material : this.getInventory()){
+		for(Material material : this.inventory){
 			material.setUnitPosition(PositionVector.centrePosition(position));
 			this.removeMaterial(material);
 			this.getWorld().addMaterial(material);
@@ -3055,12 +3055,12 @@ public class Unit extends GameObject {
 	 * Check whether a given material is in this unit's inventory.
 	 * @param material	The given material.
 	 * @return	True if and only if this unit's inventory contains the given material.
-	 * 			| result == this.getInventory().contains(material)
+	 * 			| result == this.inventory.contains(material)
 	 */
 	public boolean inInventory(Material material){
 		if(material == null)
 			return false;
-		return this.getInventory().contains(material);
+		return this.inventory.contains(material);
 	}
 	
 	/**
@@ -3393,13 +3393,13 @@ public class Unit extends GameObject {
 	 * Return the effective weight of this unit, this unit's weight plus everything it's carrying.
 	 * @return	This unit's weight plus the weight of everything that's in it's inventory.
 	 * 			| int weight = this.getWeight()
-	 * 			| for(Material object : this.getInventory())
+	 * 			| for(Material object : this.inventory)
 	 * 			| 	weight = weight + object.getWeight()
 	 * 			| result == weight
 	 */
 	public int getEffectiveWeight() {
 		int weight = this.getWeight();
-		for(Material object : this.getInventory())
+		for(Material object : this.inventory)
 			weight = weight + object.getWeight();
 		return weight;
 	}
@@ -3408,13 +3408,13 @@ public class Unit extends GameObject {
 	 * Check whether this unit is carrying a log.
 	 * @return	True if and only if this unit has a Log in it's inventory.
 	 * 			| boolean flag = false
-	 * 			| for(Material material : this.getInventory())
+	 * 			| for(Material material : this.inventory)
 	 * 			| 	if(material.getClass().equals(Log.class))
 	 * 			| 		flag = true
 	 * 			| result == flag
 	 */
 	public boolean isCarryingLog() {
-		for(Material material : this.getInventory()){
+		for(Material material : this.inventory){
 			if(material.getClass().equals(Log.class))
 				return true;
 		}
@@ -3425,13 +3425,13 @@ public class Unit extends GameObject {
 	 * Check whether this unit is carrying a boulder.
 	 * @return	True if and only if this unit has a Boulder in it's inventory.
 	 * 			| boolean flag = false
-	 * 			| for(Material material : this.getInventory())
+	 * 			| for(Material material : this.inventory)
 	 * 			| 	if(material.getClass().equals(Boulder.class))
 	 * 			| 		flag = true
 	 * 			| result == flag
 	 */
 	public boolean isCarryingBoulder() {
-		for(Material material : this.getInventory()){
+		for(Material material : this.inventory){
 			if(material.getClass().equals(Boulder.class))
 				return true;
 		}
@@ -3441,10 +3441,10 @@ public class Unit extends GameObject {
 	/**
 	 * Check whether this unit is carrying an item.
 	 * @return	True if and only if this unit's inventory is not empty.
-	 * 			| result == (! this.getInventory().isEmpty())
+	 * 			| result == (! this.inventory.isEmpty())
 	 */
 	public boolean isCarryingItem() {
-		if(! this.getInventory().isEmpty())
+		if(! this.inventory.isEmpty())
 			return true;
 		return false;
 	}

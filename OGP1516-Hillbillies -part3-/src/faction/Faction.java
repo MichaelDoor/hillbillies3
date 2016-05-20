@@ -68,9 +68,9 @@ public class Faction {
 	public void addUnit(Unit unit) throws NullPointerException, IllegalStateException {
 		try{if(unit == null)
 				throw new NullPointerException();
-			if(this.getUnitSet().size() == maxNbOfUnits)
+			if(this.unitSet.size() == maxNbOfUnits)
 				throw new IllegalStateException();
-			this.getUnitSet().add(unit);
+			this.unitSet.add(unit);
 		}
 		catch(IllegalStateException exc){
 			
@@ -91,7 +91,7 @@ public class Faction {
 			throw new NullPointerException();
 		if(! this.hasAsUnit(unit))
 			throw new IllegalArgumentException("The given unit does not belong to this faction!");
-		this.getUnitSet().remove(unit);
+		this.unitSet.remove(unit);
 	}
 	
 	/**
@@ -104,7 +104,7 @@ public class Faction {
 	public boolean hasAsUnit(Unit unit) throws NullPointerException {
 		if(unit == null)
 			throw new NullPointerException();
-		return this.getUnitSet().contains(unit);
+		return this.unitSet.contains(unit);
 	}
 	
 	/**

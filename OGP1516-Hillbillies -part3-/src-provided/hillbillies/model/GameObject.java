@@ -356,8 +356,8 @@ public abstract class GameObject {
 	 * @effect	This game object's activity status is set to 'fall', it's current velocity to the fall velocity of any game object.
 	 * 			| this.setActivityStatus("fall")
 	 * 			| this.setNextPosition(PositionVector.centrePosition(this.getWorld().getPositionUnderneath(this.getCubePosition())))
+	 * @note Not raw since the subclass' implementation uses it not raw.
 	 */
-	@Raw
 	protected void fall() {
 		this.setActivityStatus("fall");
 		this.setCurrentVelocity(fallVelocity);
