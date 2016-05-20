@@ -1,6 +1,8 @@
 package hillbillies.model;
 
 import java.util.HashSet;
+
+import be.kuleuven.cs.som.annotate.Raw;
 import hillbillies.model.GameObject;
 import hillbillies.model.PositionVector;
 
@@ -38,7 +40,7 @@ public abstract class PassableCube extends Cube {
 	 * Check whether this passable cube is solid.
 	 * @effect	Return false.
 	 */
-	@Override
+	@Override @Raw
 	public boolean isSolid() {
 		return false;
 	}

@@ -22,9 +22,6 @@ import hillbillies.model.Faction;
  * @invar  The toughness of each unit must be a valid toughness for any
  *         unit.
  *       | isValidToughness(getToughness())
- * @invar  The weight of each unit must be a valid weight for any
- *         unit.
- *       | isValidWeight(getWeight())
  * @invar  The maxHP of each unit must be a valid maxHP for any
  *         unit.
  *       | isValidMaxHP(getMaxHP())
@@ -40,18 +37,9 @@ import hillbillies.model.Faction;
  * @invar  The orientation of each unit must be a valid orientation for any
  *         unit.
  *       | isValidOrientation(getOrientation())
- * @invar  The activityStatus of each unit must be a valid activityStatus for any
- *         unit.
- *       | isValidActivityStatus(getActivityStatus())
  * @invar  The movementstatus of each unit must be a valid movementstatus for any
  *         unit.
  *       | isValidMovementStatus(getMovementStatus())
- * @invar  The current velocity of each unit must be a valid current velocity for any
- *         unit.
- *       | isValidCurrentVelocity(getCurrentVelocity())
- * @invar  The targeted adjacent position of each unit must be a valid targeted adjacent position for any
- *         unit.
- *       | isValidNextPosition(getNextPosition())
  * @invar  The destination of each unit must be a valid destination for any
  *         unit.
  *       | isValidDestination(getDestination())

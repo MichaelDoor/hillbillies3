@@ -4,9 +4,6 @@ import be.kuleuven.cs.som.annotate.*;
 
 /**
  * A class of position vectors involving arguments as double precision floating-point numbers.
- * 
- * @invar  Each PositionVector can have its arguments as arguments.
- *       | canHaveAsArgument(this.getXArgument()) && canHaveAsArgument(this.getYArgument()) && canHaveAsArgument(this.getZArgument())
  */
 @Value
 public class PositionVector {

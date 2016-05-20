@@ -2,6 +2,7 @@ package hillbillies.model;
 
 import java.util.HashSet;
 
+import be.kuleuven.cs.som.annotate.Raw;
 import hillbillies.model.GameObject;
 import hillbillies.model.PositionVector;
 
@@ -37,7 +38,7 @@ public class Workshop extends PassableCube {
 	 * Return the terrain type of this workshop cube.
 	 * @return	3
 	 */
-	@Override
+	@Override @Raw
 	public int getTerrainType() {
 		return 3;
 	}

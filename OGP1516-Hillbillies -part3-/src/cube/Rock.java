@@ -2,6 +2,7 @@ package cube;
 
 import java.util.HashSet;
 
+import be.kuleuven.cs.som.annotate.Raw;
 import objects.GameObject;
 import position.PositionVector;
 
@@ -39,7 +40,7 @@ public class Rock extends SolidCube {
 	 * Return the terrain type of this rock cube.
 	 * @return	3
 	 */
-	@Override
+	@Override @Raw
 	public int getTerrainType() {
 		return 1;
 	}

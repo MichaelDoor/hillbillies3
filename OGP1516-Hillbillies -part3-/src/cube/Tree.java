@@ -2,6 +2,7 @@ package cube;
 
 import java.util.HashSet;
 
+import be.kuleuven.cs.som.annotate.Raw;
 import objects.GameObject;
 import position.PositionVector;
 
@@ -39,7 +40,7 @@ public class Tree extends SolidCube {
 	 * Return the terrain type of this tree cube.
 	 * @return	2
 	 */
-	@Override
+	@Override @Raw
 	public int getTerrainType() {
 		return 2;
 	}

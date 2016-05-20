@@ -2,6 +2,7 @@ package cube;
 
 import java.util.HashSet;
 
+import be.kuleuven.cs.som.annotate.Raw;
 import objects.GameObject;
 import position.PositionVector;
 
@@ -37,7 +38,7 @@ public class Workshop extends PassableCube {
 	 * Return the terrain type of this workshop cube.
 	 * @return	3
 	 */
-	@Override
+	@Override @Raw
 	public int getTerrainType() {
 		return 3;
 	}

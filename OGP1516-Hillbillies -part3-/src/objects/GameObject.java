@@ -9,9 +9,21 @@ import world.World;
 
 /**
  * A class of game objects, having a position and weight.
+ * @invar  The activityStatus of each unit must be a valid activityStatus for any
+ *         unit.
+ *       | isValidActivityStatus(getActivityStatus())
+ * @invar  The current velocity of each unit must be a valid current velocity for any
+ *         unit.
+ *       | isValidCurrentVelocity(getCurrentVelocity())
+ * @invar  The targeted adjacent position of each unit must be a valid targeted adjacent position for any
+ *         unit.
+ *       | isValidNextPosition(getNextPosition())
  * @invar  The unitPosition of each game object must be a valid unitPosition for any
  *         game object.
  *       | isValidUnitPosition(getUnitPosition())
+ * @invar  The weight of each unit must be a valid weight for any
+ *         unit.
+ *       | isValidWeight(getWeight())
  * @invar  The world of each unit must be a valid world for any
  *         game object.
  *       | isValidWorld(getWorld())

@@ -2,6 +2,7 @@ package cube;
 
 import java.util.HashSet;
 
+import be.kuleuven.cs.som.annotate.Raw;
 import objects.GameObject;
 import position.PositionVector;
 
@@ -39,7 +40,7 @@ public abstract class PassableCube extends Cube {
 	 * Check whether this passable cube is solid.
 	 * @effect	Return false.
 	 */
-	@Override
+	@Override @Raw
 	public boolean isSolid() {
 		return false;
 	}

@@ -2,6 +2,7 @@ package cube;
 
 import java.util.HashSet;
 
+import be.kuleuven.cs.som.annotate.Raw;
 import objects.GameObject;
 import position.PositionVector;
 
@@ -38,7 +39,7 @@ public class Air extends PassableCube {
 	 * Return the terrain type of this air cube.
 	 * @return	0
 	 */
-	@Override
+	@Override @Raw
 	public int getTerrainType() {
 		return 0;
 	}
