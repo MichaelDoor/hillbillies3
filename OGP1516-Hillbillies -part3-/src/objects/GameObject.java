@@ -28,7 +28,7 @@ import world.World;
  *
  */
 public abstract class GameObject {
-	
+	// hallo
 	/**
 	 * Create a new game object with a given position.
 	 * @param position	The given position.
